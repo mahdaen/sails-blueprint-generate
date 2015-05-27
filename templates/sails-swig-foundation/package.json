@@ -24,8 +24,8 @@
     "keywords"        : [
         "sails",
         "swig",
-        "bootstrap",
-        "sails swig bootstrap template"
+        "foundation",
+        "sails swig foundation template"
     ],
     "author"          : "%%AUTHOR%%%",
     "license"         : "%%LICENSE%%",

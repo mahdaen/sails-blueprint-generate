@@ -4,34 +4,16 @@ This is **sails** app blueprint to work with **swig** template instead of **ejs*
 Read more informations about [Sails Js](http://sailsjs.org) and [Swig](http://paularmstrong.github.io/swig/)
 
 ***
-## **Installation**
+## **Usage**
 
-Ensure you have **`Sails`** installed globally.
-
-
-```
-$ npm install -g sails
-```
-**or**
+CD to the project folder and start the server.
 
 ```
-$ sudo npm install -g sails
-```
-
-Clone this repo.
-
-```
-$ git clone https://github.com/mahdaen/sails-views-swig.git sails-swig
-```
-
-CD to the cloned repo and start the server.
-
-```
-$ cd sails-swig
+$ cd %%NAME%%
 $ sails lift
 ```
 
-If you want to restart the app on file changes, you can use **`forever`** to start the app.
+If you want to restart the app on file changes, you can use **`forever -w`** to start the app.
 We've added **`.tmp`** and **`www`** folder to forever ignore list.
 
 ```
@@ -97,9 +79,3 @@ bower install --save jquery short-sass
 @include normalize;
 @include reset;
 ```
-
-## **History**
-
-2015/05/24          v1.1.5          "Adding www to gitignore, change grunt-watch config, and adding local data."
-2015/05/24          v1.1.4          "Adding pattern to .foreverignore"
-2015/05/24          v1.1.3          "Adding .foreverignore and updating readme"

@@ -121,7 +121,7 @@ var processTemplate = function(nextans, answers) {
         var resDir = paths.resolve(tplDir, answers.template);
 
         /* Get template files */
-        var resFiles = globs.sync(resDir + '/**'), tplFiles = [];
+        var resFiles = globs.sync(resDir + '/**').concat(globs.sync(resDir + '/.*')), tplFiles = [];
 
         /* Processing each files for write and replacing variables */
         resFiles.forEach(function (file) {

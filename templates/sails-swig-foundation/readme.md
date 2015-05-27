@@ -1,6 +1,6 @@
 ## **%%REALNAME%% - SailsJS Blueprint with Swig Template Engine**
 
-This is **sails** app blueprint to work with **Swig** template and **Bootstrap** instead of **ejs**.
+This is **sails** app blueprint to work with **swig** template and **Foundation** instead of **ejs**.
 Read more informations about [Sails Js](http://sailsjs.org) and [Swig](http://paularmstrong.github.io/swig/)
 
 ***
@@ -37,8 +37,12 @@ $ forever -w start app.js
 **Bower Packages**
 
 * **jQuery**
+* **jQuery Cookie**
+* **jQuery Placeholder**
 * **JQPatch**
-* **Bootstrap**
+* **Modernizr**
+* **Fastclick**
+* **Foundation**
 * **Short SASS**
 
 

@@ -27,6 +27,8 @@ and fill the inputs.
 ## **Available Templates**
 
 * **`sails-swig`** - Sails Blueprint with Swig Template Engine
+* **`sails-swig-bootstrap`** - Sails Blueprint with Swig Template Engine and Bootstrap
+* **`sails-swig-foundation`** - Sails Blueprint with Swig Template Engine and Foundation
 
 ***
 ## **Notes**
