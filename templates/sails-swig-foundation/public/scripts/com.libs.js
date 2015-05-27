@@ -4,7 +4,7 @@
 /* Importing jQuery and Friends */
 '@import $root/library/jquery/dist/jquery.js';
 '@import $root/library/jquery.cookie/jquery.cookie.js';
-'@import $root/library/jquery-placeholder/jquery-placeholder.js';
+'@import $root/library/jquery-placeholder/jquery.placeholder.js';
 '@import $root/library/jqpatch/dist/jqpatch.js';
 
 /* Importing Fasclick */
