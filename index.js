@@ -47,7 +47,6 @@ else {
 
 if ( cliArg.indexOf('-v') > -1 || cliArg.indexOf('--verbose') > -1 ) {
     verbose = true;
-    console.log('Verbose mode');
 }
 
 /* Welcome Message */
@@ -107,8 +106,115 @@ if ( Array.isArray(exprompt) ) {
 }
 
 /* Initializing Generator */
-inquire.prompt(prompt, function (answers) {
+var processTemplate = function(nextans, answers) {
+    if ( nextans.verify == 'yes' ) {
+        /* Tell user that process is started */
+        console.log(
+            color.green.bold('Generating Sails Blueprint for ') +
+            color.bold(answers.name) +
+            color.green.bold(' with template ') +
+            color.bold(answers.template) +
+            color.green.bold(' ...')
+        );
+
+        /* Get template resource dir */
+        var resDir = paths.resolve(tplDir, answers.template);
+
+        /* Get template files */
+        var resFiles = globs.sync(resDir + '/**'), tplFiles = [];
+
+        /* Processing each files for write and replacing variables */
+        resFiles.forEach(function (file) {
+            if ( files.statSync(file).isFile() ) {
+                if ( verbose ) {
+                    console.log(
+                        color.green.bold('Processing template ') +
+                        color.bold(file.replace(resDir, '')) +
+                        color.green.bold(' ...')
+                    );
+                }
+                var fileStr = files.readFileSync(file, 'utf8'), filename = file.replace(resDir, '');
+
+                if ( fileStr ) {
+
+                    for ( var pattern in answers ) {
+                        if ( pattern in answers ) {
+                            fileStr = fileStr.replace(new RegExp('%%' + pattern.toUpperCase() + '%%', 'g'), answers[ pattern ]);
+                        }
+                    }
+
+                    filex.outputFileSync(targetDir + filename, fileStr);
+                }
+                else {
+                    filex.copySync(file, targetDir + filename);
+                }
+            }
+        });
+
+        console.log(
+            color.green.bold('\r\nSails Blueprint successfully generated.\r\n') +
+            color.green.bold('Project path: ') +
+            color.bold(targetDir) + '\r\n' +
+            color.green.bold('Run the application by executing ') +
+            color.bold('sails lift') +
+            color.green.bold(' or ') +
+            color.bold('forever -w app.js') + '\r\n'
+        );
+
+        /* Install Bower and NPM or not */
+        var wbower, wnpm;
+
+        if ( answers.npmdep && answers.npmdep !== '' ) wnpm = true;
+        if ( answers.bowdep && answers.bowdep !== '' ) wbower = true;
+
+        if ( wnpm ) {
+            console.log(color.green.bold('Installing NPM Packages...'));
+
+            execs('cd ./' + targetName + ' && npm install && npm install --save ' + answers.npmdep, function (err) {
+                if ( !err ) {
+                    console.log(color.green.bold('NPM Packages installed.'));
+                }
+            });
+        }
+        else {
+            console.log(color.green.bold('Installing NPM Packages...'));
+
+            execs('cd ./' + targetName + ' && npm install', function (err) {
+                if ( !err ) {
+                    console.log(color.green.bold('NPM Packages installed.'));
+                }
+            });
+        }
+
+        if ( wbower ) {
+            console.log(color.green.bold('Installing Bower Packages...'));
+
+            execs('cd ./' + targetName + ' && bower install && bower install --save ' + answers.bowdep, function (err) {
+                if ( !err ) {
+                    console.log(color.green.bold('Bower Packages installed.'));
+                }
+            });
+        }
+        else {
+            console.log(color.green.bold('Installing Bower Packages...'));
+
+            execs('cd ./' + targetName + ' && bower install', function (err) {
+                if ( !err ) {
+                    console.log(color.green.bold('Bower Packages installed.'));
+                }
+            });
+        }
+    }
+    else {
+        console.log(color.red.bold('Setup canceled.'));
+
+        process.exit(0);
+    }
+}
+
+var finalize = function(answers) {
     console.log(answers);
+
     inquire.prompt([
         {
             type    : 'input',
@@ -117,109 +223,23 @@ inquire.prompt(prompt, function (answers) {
             default : 'yes'
         }
     ], function (nextans) {
-        if ( nextans.verify == 'yes' ) {
-            /* Tell user that process is started */
-            console.log(
-                color.green.bold('Generating Sails Blueprint for ') +
-                color.bold(answers.name) +
-                color.green.bold(' with template ') +
-                color.bold(answers.template) +
-                color.green.bold(' ...')
-            );
-
-            /* Get template resource dir */
-            var resDir = paths.resolve(tplDir, answers.template);
-
-            /* Get template files */
-            var resFiles = globs.sync(resDir + '/**'), tplFiles = [];
-
-            /* Processing each files for write and replacing variables */
-            resFiles.forEach(function (file) {
-                if ( files.statSync(file).isFile() ) {
-                    if ( verbose ) {
-                        console.log(
-                            color.green.bold('Processing template ') +
-                            color.bold(file.replace(resDir, '')) +
-                            color.green.bold(' ...')
-                        );
-                    }
-                    var fileStr = files.readFileSync(file, 'utf8'), filename = file.replace(resDir, '');
-
-                    if ( fileStr ) {
-
-                        for ( var pattern in answers ) {
-                            if ( pattern in answers ) {
-                                fileStr = fileStr.replace(new RegExp('%%' + pattern.toUpperCase() + '%%', 'g'), answers[ pattern ]);
-                            }
-                        }
-
-                        filex.outputFileSync(targetDir + filename, fileStr);
-                    }
-                    else {
-                        filex.copySync(file, targetDir + filename);
-                    }
-                }
-            });
-
-            console.log(
-                color.green.bold('\r\nSails Blueprint successfully generated.\r\n') +
-                color.green.bold('Project path: ') +
-                color.bold(targetDir) + '\r\n' +
-                color.green.bold('Run the application by executing ') +
-                color.bold('sails lift') +
-                color.green.bold(' or ') +
-                color.bold('forever -w app.js') + '\r\n'
-            );
-
-            /* Install Bower and NPM or not */
-            var wbower, wnpm;
-
-            if ( answers.npmdep && answers.npmdep !== '' ) wnpm = true;
-            if ( answers.bowdep && answers.bowdep !== '' ) wbower = true;
-
-            if ( wnpm ) {
-                console.log(color.green.bold('Installing NPM Packages...'));
-
-                execs('cd ./' + targetName + ' && npm install && npm install --save ' + answers.npmdep, function (err) {
-                    if ( !err ) {
-                        console.log(color.green.bold('NPM Packages installed.'));
-                    }
-                });
-            }
-            else {
-                console.log(color.green.bold('Installing NPM Packages...'));
-
-                execs('cd ./' + targetName + ' && npm install', function (err) {
-                    if ( !err ) {
-                        console.log(color.green.bold('NPM Packages installed.'));
-                    }
-                });
-            }
-
-            if ( wbower ) {
-                console.log(color.green.bold('Installing Bower Packages...'));
-
-                execs('cd ./' + targetName + ' && bower install && bower install --save ' + answers.bowdep, function (err) {
-                    if ( !err ) {
-                        console.log(color.green.bold('Bower Packages installed.'));
-                    }
-                });
-            }
-            else {
-                console.log(color.green.bold('Installing Bower Packages...'));
-
-                execs('cd ./' + targetName + ' && bower install', function (err) {
-                    if ( !err ) {
-                        console.log(color.green.bold('Bower Packages installed.'));
-                    }
-                });
-            }
-        }
-        else {
-            console.log(color.red.bold('Setup canceled.'));
-
-            process.exit(0);
-        }
+        processTemplate(nextans, answers);
     });
+}
+
+inquire.prompt(prompt, function (answers) {
+    if (files.existsSync(paths.resolve(tplDir, answers.template + '/prompts.json'))) {
+        var extraPrompt = require(paths.resolve(tplDir, answers.template + '/prompts.json'));
+
+        inquire.prompt(extraPrompt, function(exAnswers) {
+            for (var key in exAnswers) {
+                answers[key] = exAnswers[key];
+            }
+
+            finalize(answers);
+        });
+    } else {
+        finalize(answers);
+    }
 });
 

@@ -1,0 +1,26 @@
+[
+    {
+        "name"    : "devport",
+        "type"    : "input",
+        "message" : "Development Port",
+        "default" : "8080"
+    },
+    {
+        "name"    : "prodport",
+        "type"    : "input",
+        "message" : "Production Port",
+        "default" : "9090"
+    },
+    {
+        "name"    : "devdriver",
+        "type"    : "input",
+        "message" : "Development Database Driver",
+        "default" : "sails-disk"
+    },
+    {
+        "name"    : "proddriver",
+        "type"    : "input",
+        "message" : "Production Database Driver",
+        "default" : "sails-mongo"
+    }
+]
