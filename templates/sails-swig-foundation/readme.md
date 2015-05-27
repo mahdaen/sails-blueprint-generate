@@ -1,7 +1,7 @@
 ## **%%REALNAME%% - SailsJS Blueprint with Swig Template Engine**
 
-This is **sails** app blueprint to work with **swig** template and **Foundation** instead of **ejs**.
-Read more informations about [Sails Js](http://sailsjs.org) and [Swig](http://paularmstrong.github.io/swig/)
+This is **sails** app blueprint to work with **swig** template and **Foundation**.
+Read more informations about [Sails Js](http://sailsjs.org), [Swig](http://paularmstrong.github.io/swig/), and [Foundation](http://foundation.zurb.com)
 
 ***
 ## **Usage**

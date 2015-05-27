@@ -5,7 +5,6 @@ var inquire = require('inquirer'),
     files   = require('fs'),
     filex   = require('fs-extra'),
     globs   = require('glob'),
-    mimes   = require('mime'),
     paths   = require('path'),
     execs   = require('child_process').exec,
     color   = require('colors/safe');
