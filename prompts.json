@@ -2,7 +2,8 @@
     {
         "name"    : "author",
         "type"    : "input",
-        "message" : "Author"
+        "message" : "Author",
+        "default" : "Your Name <name@mail.com>"
     },
     {
         "name"    : "license",
@@ -13,11 +14,11 @@
     {
         "name"    : "npmdep",
         "type"    : "input",
-        "message" : "NPM Packages, separated by space"
+        "message" : "Install Additional NPM Packages? Separated by space"
     },
     {
         "name"    : "bowdep",
         "type"    : "input",
-        "message" : "Bower Packages, separated by space"
+        "message" : "Install Additional Bower Packages? separated by space"
     }
 ]

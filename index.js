@@ -63,13 +63,13 @@ var prompt = [
     {
         type    : 'input',
         name    : 'name',
-        message : 'Name',
+        message : 'Project Name',
         default : (targetName || 'sails-app').replace(/[\s\.]+/g, '-')
     },
     {
         name    : 'realname',
         type    : 'input',
-        message : 'Real Name',
+        message : 'Full Name',
         default : 'Sails Application'
     },
     {
