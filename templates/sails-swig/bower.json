@@ -1,0 +1,24 @@
+{
+    "name"        : "%%NAME%%",
+    "version"     : "%%VERSION%%",
+    "description" : "%%DESCRIPTION%%",
+    "ignore"      : [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "library",
+        "test",
+        "tests"
+    ],
+    "keywords"    : [
+        "sails",
+        "swig",
+        "sails",
+        "swig",
+        "template"
+    ],
+    "author"      : "%%AUTHOR%%",
+    "license"     : "%%LICENSE%%",
+    "homepage"    : "%%REPOSITORY%%",
+    "main"        : "app.js"
+}

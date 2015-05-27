@@ -1,0 +1,23 @@
+[
+    {
+        "name"    : "author",
+        "type"    : "input",
+        "message" : "Author"
+    },
+    {
+        "name"    : "license",
+        "type"    : "input",
+        "message" : "License",
+        "default" : "MIT"
+    },
+    {
+        "name"    : "npmdep",
+        "type"    : "input",
+        "message" : "NPM Packages, separated by space"
+    },
+    {
+        "name"    : "bowdep",
+        "type"    : "input",
+        "message" : "Bower Packages, separated by space"
+    }
+]
