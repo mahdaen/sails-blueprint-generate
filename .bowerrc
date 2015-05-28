@@ -1,5 +1,6 @@
 {
     "directory": "templates",
-    "json": "bower.json"
+    "json": "bower.json",
+    "allow_root" : true
 }
 
