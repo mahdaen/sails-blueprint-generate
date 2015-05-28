@@ -120,7 +120,6 @@ var processTemplate = function (nextans, answers) {
                     }
 
                     if ( ('main' in npkg && file === paths.join(resDir, npkg.main)) || file === paths.join(resDir, 'app.js') ) {
-                        console.log(file);
                         fileStr = "// Embedding NativeJS\r\nrequire('native-js');\r\n\r\n" + fileStr;
                     }
 
