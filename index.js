@@ -160,7 +160,7 @@ var processTemplate = function (nextans, answers) {
         if ( wbower ) {
             console.log(color.green.bold('Installing Bower Packages...'));
 
-            execs('cd ./' + targetName + ' && bower install && bower install --save ' + answers.bowdep, function (err) {
+            execs('cd ./' + targetName + ' && bower install --allow-root && bower install --allow-root --save ' + answers.bowdep, function (err) {
                 if ( !err ) {
                     console.log(color.green.bold('Bower Packages installed.'));
                 }
@@ -169,7 +169,7 @@ var processTemplate = function (nextans, answers) {
         else {
             console.log(color.green.bold('Installing Bower Packages...'));
 
-            execs('cd ./' + targetName + ' && bower install', function (err) {
+            execs('cd ./' + targetName + ' && bower install --allow-root', function (err) {
                 if ( !err ) {
                     console.log(color.green.bold('Bower Packages installed.'));
                 }
@@ -253,7 +253,7 @@ else {
                     if ( instart <= pkgs.length ) {
                         console.log(color.green.bold('Installing additional template ') + color.bold(pkg));
 
-                        execs('cd ' + root + ' && bower install ' + pkg, function (err, data) {
+                        execs('cd ' + root + ' && bower install --allow-root ' + pkg, function (err, data) {
                             if ( err ) {
                                 console.log(color.red.bold('Unable to install or template not found: ') + color.bold(pkg) + '\r\n');
                             }
