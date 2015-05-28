@@ -200,4 +200,7 @@ Generator will iterate all prompts and apply to all files inside template folder
 ***
 ## **Notes**
 
+Generator will embedding [NativeJS](https://github.com/mahdaen/native-js) to the generated template. You can remove it 
+in the template main file (e.g **`app.js`**) at the first line if you don't want it.
+
 Please open new issue for suggestions, template request or input prompts request.

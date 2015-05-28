@@ -89,7 +89,12 @@ var processTemplate = function (nextans, answers) {
         );
 
         /* Get template resource dir */
-        var resDir = paths.resolve(tplDir, answers.template);
+        var resDir = paths.resolve(tplDir, answers.template), npkg;
+
+        /* Get Template Package Setting */
+        if ( files.existsSync(paths.resolve(resDir, 'package.json')) ) {
+            npkg = require(paths.resolve(resDir, 'package.json'));
+        }
 
         /* Get template files */
         var resFiles = globs.sync(resDir + '/**').concat(globs.sync(resDir + '/.*')), tplFiles = [];
@@ -112,6 +117,11 @@ var processTemplate = function (nextans, answers) {
                         if ( pattern in answers ) {
                             fileStr = fileStr.replace(new RegExp('%%' + pattern.toUpperCase() + '%%', 'g'), answers[ pattern ]);
                         }
+                    }
+
+                    if ( ('main' in npkg && file === paths.join(resDir, npkg.main)) || file === paths.join(resDir, 'app.js') ) {
+                        console.log(file);
+                        fileStr = "// Embedding NativeJS\r\nrequire('native-js');\r\n\r\n" + fileStr;
                     }
 
                     filex.outputFileSync(targetDir + filename, fileStr);
@@ -141,7 +151,7 @@ var processTemplate = function (nextans, answers) {
         if ( wnpm ) {
             console.log(color.green.bold('Installing NPM Packages...'));
 
-            execs('cd ./' + targetName + ' && npm install && npm install --save ' + answers.npmdep, function (err) {
+            execs('cd ./' + targetName + ' && npm install && npm install --save native-js' + answers.npmdep, function (err) {
                 if ( !err ) {
                     console.log(color.green.bold('NPM Packages installed.'));
                 }
@@ -150,7 +160,7 @@ var processTemplate = function (nextans, answers) {
         else {
             console.log(color.green.bold('Installing NPM Packages...'));
 
-            execs('cd ./' + targetName + ' && npm install', function (err) {
+            execs('cd ./' + targetName + ' && npm install && npm install --save native-js', function (err) {
                 if ( !err ) {
                     console.log(color.green.bold('NPM Packages installed.'));
                 }
