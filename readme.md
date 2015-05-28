@@ -28,12 +28,28 @@ $ npm install -g sails-blueprint-generate
 ```
 
 ***
+## **Install External Templates**
+
+To install external templates, templates must be registered on bower registry.
+After installing, external templates will vailable on **Select Template** list
+
+```bash
+$ sailsgen install template-name
+```
+
+**Example**
+
+```bash
+$ sailsgen install sails-swig-angular sails-jade-bootstrap
+```
+
+***
 ## **Usage**
 
 To generate new blueprint, run:
 
 ```bash
-$ sails-blueprint-generate project-name
+$ sailsgen project-name
 ```
 
 and follow the instructions.
@@ -150,6 +166,36 @@ macbook:projects euser$
 * **`sails-swig`** - Sails Blueprint with Swig Template Engine
 * **`sails-swig-bootstrap`** - Sails Blueprint with Swig Template Engine and Bootstrap
 * **`sails-swig-foundation`** - Sails Blueprint with Swig Template Engine and Foundation
+
+***
+## **Creating Template**
+
+You can create new template and publish it to bower, since this generator only can install template from bower.
+To add custom prompts to your template, add file **`prompts.js`** to your template directory. Then you can add
+your custom prompts pattern to your files, wherever you need it. Pattern format is **`%%NAME%%`**.
+
+**Example**
+
+**`prompts.json`**
+
+```json
+[
+    {
+        "name"    : "pets",
+        "type"    : "input",
+        "message" : "Favourite Pet",
+        "default" : "Cat"
+    }
+]
+```
+
+**`readme.md`**
+
+```
+Project owner love %%PETS%%
+```
+
+Generator will iterate all prompts and apply to all files inside template folder.
 
 ***
 ## **Notes**

@@ -1,5 +1,7 @@
 #! /usr/bin/env node
 
+'use strict';
+
 // /* Loading Inquirer */
 var inquire = require('inquirer'),
     files   = require('fs'),
@@ -14,42 +16,12 @@ var targetDir,
     targetName,
     cliArg   = process.argv,
     verbose,
-    package  = require('./package.json'),
+    packages = require('./package.json'),
     exprompt = require('./prompts.json');
-
-/* Processing CLI Arguments */
-if ( cliArg.length <= 2 ) {
-    console.log(color.red.bold('First argument is needed. Usage sample: ') + color.green.bold('sails-blueprint project-name') + color.red.bold(' or ') + color.green.bold('sails-blueprint version'));
-    process.exit(1);
-}
-else {
-    var initArg = cliArg[ 2 ];
-
-    switch ( initArg ) {
-        case '-v':
-            console.log(color.green.bold('Sails Blueprint Generator ') + color.bold(package.version));
-            process.exit(0);
-        case 'version':
-            console.log(color.green.bold('Sails Blueprint Generator ') + color.bold(package.version));
-            process.exit(0);
-        case '-h':
-            console.log('Visit Github Repo to learn Sails Blueprint Generator ' + color.green.bold(package.homepage));
-            process.exit(0);
-        case 'help':
-            console.log('Visit Github Repo to learn Sails Blueprint Generator ' + color.green.bold(package.homepage));
-            process.exit(0);
-        default :
-            targetName = cliArg[ 2 ];
-            targetDir = paths.resolve(process.cwd(), targetName);
-    }
-}
 
 if ( cliArg.indexOf('-v') > -1 || cliArg.indexOf('--verbose') > -1 ) {
     verbose = true;
 }
-
-/* Welcome Message */
-console.log(color.green.bold('Welcome to interactive ') + color.bold('Sails Blueprint') + color.green.bold(' generator') + '\r\n');
 
 /* Getting Template Lists */
 var tplDir = paths.resolve(__dirname, 'templates');
@@ -105,7 +77,7 @@ if ( Array.isArray(exprompt) ) {
 }
 
 /* Initializing Generator */
-var processTemplate = function(nextans, answers) {
+var processTemplate = function (nextans, answers) {
     if ( nextans.verify == 'yes' ) {
         /* Tell user that process is started */
         console.log(
@@ -211,7 +183,8 @@ var processTemplate = function(nextans, answers) {
     }
 }
 
-var finalize = function(answers) {
+/* Finalizing Generator */
+var finalize = function (answers) {
     console.log(answers);
 
     inquire.prompt([
@@ -226,19 +199,88 @@ var finalize = function(answers) {
     });
 }
 
-inquire.prompt(prompt, function (answers) {
-    if (files.existsSync(paths.resolve(tplDir, answers.template + '/prompts.json'))) {
-        var extraPrompt = require(paths.resolve(tplDir, answers.template + '/prompts.json'));
+/* Executing Setup */
+var doSetup = function () {
+    inquire.prompt(prompt, function (answers) {
+        if ( files.existsSync(paths.resolve(tplDir, answers.template + '/prompts.json')) ) {
+            var extraPrompt = require(paths.resolve(tplDir, answers.template + '/prompts.json'));
 
-        inquire.prompt(extraPrompt, function(exAnswers) {
-            for (var key in exAnswers) {
-                answers[key] = exAnswers[key];
-            }
+            inquire.prompt(extraPrompt, function (exAnswers) {
+                for ( var key in exAnswers ) {
+                    answers[ key ] = exAnswers[ key ];
+                }
 
+                finalize(answers);
+            });
+        }
+        else {
             finalize(answers);
-        });
-    } else {
-        finalize(answers);
+        }
+    });
+}
+
+/* Processing CLI Arguments */
+if ( cliArg.length <= 2 ) {
+    console.log(color.red.bold('First argument is needed. Usage sample: ') + color.green.bold('sails-blueprint project-name') + color.red.bold(' or ') + color.green.bold('sails-blueprint version'));
+    process.exit(1);
+}
+else {
+    var initArg = cliArg[ 2 ];
+
+    switch ( initArg ) {
+        case '-v':
+            console.log(color.green.bold('Sails Blueprint Generator ') + color.bold(packages.version));
+            break;
+        case 'version':
+            console.log(color.green.bold('Sails Blueprint Generator ') + color.bold(packages.version));
+            break;
+        case '-h':
+            console.log('Visit Github Repo to learn Sails Blueprint Generator ' + color.green.bold(packages.homepage));
+            break;
+        case 'help':
+            console.log('Visit Github Repo to learn Sails Blueprint Generator ' + color.green.bold(packages.homepage));
+            break;
+        case 'install':
+            var pkgs = cliArg.slice(3);
+
+            if ( pkgs.length > 0 ) {
+                var instart = 0, root = paths.resolve(__dirname);
+
+                var installTpl = function () {
+                    var pkg = pkgs[ instart ];
+                    instart++;
+
+                    if ( instart <= pkgs.length ) {
+                        console.log(color.green.bold('Installing additional template ') + color.bold(pkg));
+
+                        execs('cd ' + root + ' && bower install ' + pkg, function (err, data) {
+                            if ( err ) {
+                                console.log(color.red.bold('Unable to install or template not found: ') + color.bold(pkg) + '\r\n');
+                            }
+                            else {
+                                console.log(color.green.bold('Template installed: ') + color.bold(pkg) + '\r\n');
+                            }
+
+                            installTpl();
+                        });
+                    }
+                    else {
+                        console.log(color.green.bold('Additional templates installed.'));
+                    }
+                }
+
+                installTpl();
+            }
+            break;
+        default :
+            /* Welcome Message */
+            console.log(color.green.bold('Welcome to interactive ') + color.bold('Sails Blueprint') + color.green.bold(' generator') + '\r\n');
+
+            targetName = cliArg[ 2 ];
+            targetDir = paths.resolve(process.cwd(), targetName);
+            doSetup();
+
+            break;
     }
-});
+}
 
