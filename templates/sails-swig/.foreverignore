@@ -14,6 +14,7 @@ www/**
 # EXTRA
 # Write your own ignore list below.
 
-.git
-.sass_cache
-.idea
+.git/**
+.sass_cache/**
+.idea/**
+.livereload

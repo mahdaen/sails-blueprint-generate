@@ -2,14 +2,24 @@
 config.watch = {
     /* Grunt Watch Options */
     options : {
-        livereload : 9090
+        livereload : $$RELOAD$$
     },
 
     /* Watch public folder changes to support livereload */
     public  : {
-        files : [ '.tmp/**' ]
+        files : [ '.livereload' ]
     },
 }
 
 /* Loading Task */
 grunt.loadNpmTasks('grunt-contrib-watch');
+
+/* Livereload Hook */
+grunt.registerTask('livereload', function() {
+    var file = require('fs');
+    var done = this.async();
+
+    file.writeFileSync('.livereload', new Date());
+
+    done(true);
+});

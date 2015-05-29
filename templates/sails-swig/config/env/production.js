@@ -18,14 +18,14 @@ module.exports = {
      ***************************************************************************/
 
     // models: {
-    //   connection: '%%PRODDRIVER%%'
+    //   connection: '$$PRODDRIVER$$'
     // },
 
     /***************************************************************************
      * Set the port in the production environment to 80                        *
      ***************************************************************************/
 
-    // port: %%PRODPORT%%,
+    // port: $$PRODPORT$$,
 
     /***************************************************************************
      * Set the log level in production environment to "silent"                 *

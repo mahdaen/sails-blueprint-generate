@@ -115,7 +115,7 @@ var processTemplate = function (nextans, answers) {
 
                     for ( var pattern in answers ) {
                         if ( pattern in answers ) {
-                            fileStr = fileStr.replace(new RegExp('%%' + pattern.toUpperCase() + '%%', 'g'), answers[ pattern ]);
+                            fileStr = fileStr.replace(new RegExp('$$' + pattern.toUpperCase() + '$$', 'g'), answers[ pattern ]);
                         }
                     }
 

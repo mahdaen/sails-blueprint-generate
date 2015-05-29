@@ -1,5 +1,11 @@
 [
     {
+        "name"    : "reloadport",
+        "type"    : "input",
+        "message" : "Livereload Port",
+        "default" : "8444"
+    },
+    {
         "name"    : "devport",
         "type"    : "input",
         "message" : "Development Port",
@@ -9,7 +15,7 @@
         "name"    : "prodport",
         "type"    : "input",
         "message" : "Production Port",
-        "default" : "9090"
+        "default" : "80"
     },
     {
         "name"    : "devdriver",

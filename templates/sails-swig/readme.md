@@ -1,4 +1,4 @@
-## **%%REALNAME%% - SailsJS Blueprint with Swig Template Engine**
+## **$$REALNAME$$ - SailsJS Blueprint with Swig Template Engine**
 
 This is **sails** app blueprint to work with **swig** template instead of **ejs**.
 Read more informations about [Sails Js](http://sailsjs.org) and [Swig](http://paularmstrong.github.io/swig/)
@@ -9,7 +9,7 @@ Read more informations about [Sails Js](http://sailsjs.org) and [Swig](http://pa
 CD to the project folder and start the server.
 
 ```
-$ cd %%NAME%%
+$ cd $$NAME$$
 $ sails lift
 ```
 

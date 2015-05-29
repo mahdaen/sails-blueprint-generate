@@ -1,7 +1,7 @@
 {
-    "name"            : "%%NAME%%",
-    "version"         : "%%VERSION%%",
-    "description"     : "%%DESCRIPTION%%",
+    "name"            : "$$NAME$$",
+    "version"         : "$$VERSION$$",
+    "description"     : "$$DESCRIPTION$$",
     "main"            : "app.js",
     "dependencies"    : {
         "grunt"               : "^0.4.5",
@@ -27,15 +27,15 @@
         "foundation",
         "sails swig foundation template"
     ],
-    "author"          : "%%AUTHOR%%%",
-    "license"         : "%%LICENSE%%",
+    "author"          : "$$AUTHOR$$%",
+    "license"         : "$$LICENSE$$",
     "devDependencies" : { },
     "repository"      : {
         "type" : "git",
-        "url"  : "%%REPOSITORY%%.git"
+        "url"  : "$$REPOSITORY$$.git"
     },
     "bugs"            : {
-        "url" : "%%REPOSITORY%%/issues"
+        "url" : "$$REPOSITORY$$/issues"
     },
-    "homepage"        : "%%REPOSITORY%%#readme"
+    "homepage"        : "$$REPOSITORY$$#readme"
 }

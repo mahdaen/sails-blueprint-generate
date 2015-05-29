@@ -12,10 +12,10 @@ grunt.initConfig(config);
 /* REGISTERING TASKS */
 /* ----------------- */
 /* Sync Assets */
-grunt.registerTask('SyncAssets', [ 'sync:fonts', 'sync:images', 'sync:icons', 'sync:bootstrapFonts' ]);
+grunt.registerTask('SyncAssets', [ 'sync:fonts', 'sync:images', 'sync:icons' ]);
 
 /* Registering Default Task */
-grunt.registerTask('default', [ 'clean', 'exports', 'sass:devl', 'SyncAssets' ]);
+grunt.registerTask('default', [ 'clean', 'exports', 'sass:devl', 'SyncAssets', 'livereload' ]);
 
 /* Registering Default Task */
 grunt.registerTask('build', [ 'clean', 'exports', 'sass:devl', 'SyncAssets', 'sync:prod' ]);

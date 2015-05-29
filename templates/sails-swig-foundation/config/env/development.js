@@ -18,7 +18,7 @@ module.exports = {
      ***************************************************************************/
 
     // models: {
-    //   connection: '%%DEVDRIVER%%'
+    //   connection: '$$DEVDRIVER$$'
     // }
-    // port: %%DEVPORT%%,
+    // port: $$DEVPORT$$,
 };
