@@ -144,7 +144,6 @@ var processTemplate = function (nextans, answers) {
 
                     filex.outputFileSync(targetDir + filename, fileStr);
                 } else {
-                    console.log(filename);
                     filex.copySync(file, targetDir + filename);
                 }
             }
