@@ -1,0 +1,26 @@
+{
+    "name"         : "stater",
+    "version"      : "1.0.0",
+    "description"  : "Stater is a HTML Template Blueprint including static web server based on node js. Stater help front-end developer to develop their template without headache.",
+    "ignore"       : [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "library",
+        "test",
+        "tests"
+    ],
+    "keywords"     : [
+        "swig",
+        "foundation",
+        "template"
+    ],
+    "author"       : "Nanang Mahdaen El Agung <nanang@mahdaen.name> (http://mahdaen.name)",
+    "license"      : "MIT",
+    "homepage"     : "https://github.com/mahdaen/stater",
+    "dependencies" : {
+        "short-sass" : "~2.1.1",
+        "jquery"     : "~2.1.4",
+        "jqpatch"    : "~1.1.1"
+    }
+}

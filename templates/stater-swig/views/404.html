@@ -1,0 +1,25 @@
+{% extends 'parts/layout.html' -%}
+
+{# INCLUDE HEADER #}
+{% block header -%}
+    {% include 'parts/header.html' -%}
+{%- endblock %}
+
+{# Content Block #}
+{% block content -%}
+    <section class="center">
+        <div id="logo" class="logo">
+            <img src="{{ ROOT }}images/logo-ern.png" alt=""/>
+        </div>
+        <header>
+            <h1>Not Found</h1>
+            <p>Ouch! We can't deliver your package. Do you requested a wrong package?</p>
+            <p>{{ error }}</p>
+        </header>
+    </section>
+{%- endblock %}
+
+{# FOOTER INJECTION #}
+{% block footer -%}
+    {% include 'parts/footer.html' -%}
+{%- endblock %}

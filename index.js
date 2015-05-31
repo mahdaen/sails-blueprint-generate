@@ -29,13 +29,24 @@ var templates = files.readdirSync(tplDir).filter(function (file) {
     return files.statSync(paths.join(tplDir, file)).isDirectory();
 });
 
+/* Supported Injection Files */
+var injectdef = [
+    '.js',
+    '.html',
+    '.swig',
+    '.css',
+    '.scss',
+    '.json',
+    '.md'
+];
+
 /* Preparing Setup Prompt */
 var prompt = [
     {
         type    : 'input',
         name    : 'name',
         message : 'Project Name',
-        default : (targetName || 'sails-app').replace(/[\s\.]+/g, '-')
+        default : (cliArg[ 2 ] || 'sails-app').replace(/[\s\.]+/g, '-')
     },
     {
         name    : 'realname',
@@ -109,23 +120,31 @@ var processTemplate = function (nextans, answers) {
                         color.green.bold(' ...')
                     );
                 }
-                var fileStr = files.readFileSync(file, 'utf8'), filename = file.replace(resDir, '');
 
-                if ( fileStr ) {
+                var fxt = paths.extname(file);
+
+                if (!fxt || fxt === '') fxt = '.?';
+                
+                var filename = file.replace(resDir, '');
+
+                if (injectdef.indexOf(fxt) > -1) {
+                    var fileStr = files.readFileSync(file, 'utf8');
 
                     for ( var pattern in answers ) {
                         if ( pattern in answers ) {
-                            fileStr = fileStr.replace(new RegExp('$$' + pattern.toUpperCase() + '$$', 'g'), answers[ pattern ]);
+                            fileStr = fileStr.replace(new RegExp('__' + pattern.toUpperCase() + '__', 'g'), answers[ pattern ]);
                         }
                     }
 
                     if ( ('main' in npkg && file === paths.join(resDir, npkg.main)) || file === paths.join(resDir, 'app.js') ) {
-                        fileStr = "// Embedding NativeJS\r\nrequire('native-js');\r\n\r\n" + fileStr;
+                        if ( fileStr.search('//!nonative') < -1 ) {
+                            fileStr = "// Embedding NativeJS\r\nrequire('native-js');\r\n\r\n" + fileStr;
+                        }
                     }
 
                     filex.outputFileSync(targetDir + filename, fileStr);
-                }
-                else {
+                } else {
+                    console.log(filename);
                     filex.copySync(file, targetDir + filename);
                 }
             }

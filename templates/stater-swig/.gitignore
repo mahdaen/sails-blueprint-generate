@@ -1,0 +1,26 @@
+bower_components
+npm-debug.log
+node_modules
+public/libs
+nbproject
+dump.rdb
+lib-cov
+build
+logs
+www
+
+# ============ ><><><><><><><><>< Stater ><><><><><><><><>< ============
+
+*~
+*#
+.tmp
+.idea
+*.log
+*.out
+*.pid
+*.seed
+.DS_STORE
+.netbeans
+.sass-cache
+.livereload
+.node_history

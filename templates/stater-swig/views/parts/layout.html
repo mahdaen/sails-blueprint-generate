@@ -1,0 +1,72 @@
+{# Root Path #}
+{% if env === 'development' -%}
+    {% set ROOT = '/' %}
+{%- endif %}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- START META -->
+        <meta charset="UTF-8">
+        <meta name="description" content="{{ meta.description }}">
+        <meta name="keyword" content="{{ meta.keyword }}">
+        <!-- END META -->
+
+        <!-- START TITLE -->
+        <title>{{ meta.title + ' - ' + meta.subtitle }}</title>
+        <!-- END TITLE -->
+
+        <!-- START APP ICONS -->
+        {% block appicon -%}
+            {% for icon in assets.appicon -%}
+                <link rel="{{ icon.rel }}" href="{{ ROOT }}{{ icon.href }}" {% if icon.type -%} type="{{ icon.type }}"{%- endif %}{% if icon.size -%} sizes="{{ icon.size }}"{%- endif %}/>
+            {%- endfor %}
+        {%- endblock %}
+        <!-- END APP ICONS -->
+
+        <!-- START STYLESHEETS{% if env === 'development' -%}{{ ' (DEVELOPMENT)' }}{%- endif %} -->
+        {% block stylesheets -%}
+            {% if env === 'development' -%}
+                {% for style in assets.styles -%}
+                    <link rel="stylesheet" href="{{ ROOT }}{{ style }}"/>
+                {%- endfor %}
+            {% else -%}
+                <link rel="stylesheet" href="{{ ROOT }}styles/prod.min.css"/>
+            {%- endif %}
+
+            {# Remove it when unused #}
+            <link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
+            <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,100italic,300italic,400italic,700italic' rel='stylesheet' type='text/css'>        {%- endblock %}
+        <!-- END STYLESHEETS -->
+    </head>
+    <body>
+        <!-- START HEADER -->
+        {% block header -%}{%- endblock %}
+        <!-- END HEADER -->
+
+        <!-- START CONTENT -->
+        {% block content -%}{%- endblock %}
+        <!-- END CONTENT -->
+
+        <!-- START FOOTER -->
+        {% block footer -%}{%- endblock %}
+        <!-- END FOOTER -->
+
+        <!-- START JAVASCRIPTS{% if env === 'development' -%}{{ ' (DEVELOPMENT)' }}{%- endif %} -->
+        {% block javascripts -%}
+            {% if env === 'development' -%}
+                {% for script in assets.scripts -%}
+                    <script type="text/javascript" src="{{ ROOT }}{{ script }}"></script>
+                {%- endfor %}
+            {% else -%}
+                <script type="text/javascript" src="{{ ROOT }}scripts/prod.min.js"></script>
+            {%- endif %}
+        {%- endblock %}
+        <!-- END JAVASCRIPTS -->
+
+        {% if env === 'development' && !_noreload -%}
+            <!-- LIVERELOADS (DEVELOPMENT) -->
+            <script type="text/javascript" src="http://localhost:9320/livereload.js"></script>
+        {%- endif %}
+    </body>
+</html>

@@ -1,0 +1,19 @@
+/* ============ ><><><><><><><><>< Stater ><><><><><><><><>< ============ */
+/* ===========  Web Template Development is just like a Beer  =========== */
+/* ============ ><><><><><><><><><><><><><><><><><><><><><>< ============ */
+
+/* Default Page Style */
+body {
+    @include font("Roboto" 14px 22px none 400);
+}
+
+a {
+    @include no-decoration;
+    @include public-effect;
+
+    color : #0072bc;
+
+    &:hover {
+        color : #84bd4f;
+    }
+}

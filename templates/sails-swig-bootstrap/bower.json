@@ -1,7 +1,7 @@
 {
-    "name"         : "$$NAME$$",
-    "version"      : "$$VERSION$$",
-    "description"  : "$$DESCRIPTION$$",
+    "name"         : "__NAME__",
+    "version"      : "__VERSION__",
+    "description"  : "__DESCRIPTION__",
     "ignore"       : [
         "**/.*",
         "node_modules",
@@ -16,9 +16,9 @@
         "bootstrap",
         "template"
     ],
-    "author"       : "$$AUTHOR$$",
-    "license"      : "$$LICENSE$$",
-    "homepage"     : "$$REPOSITORY$$",
+    "author"       : "__AUTHOR__",
+    "license"      : "__LICENSE__",
+    "homepage"     : "__REPOSITORY__",
     "main"         : "app.js",
     "dependencies" : {
         "bootstrap"  : "~3.3.4",

@@ -172,7 +172,7 @@ macbook:projects euser$
 
 You can create new template and publish it to bower, since this generator only can install template from bower.
 To add custom prompts to your template, add file **`prompts.js`** to your template directory. Then you can add
-your custom prompts pattern to your files, wherever you need it. Pattern format is **`$$NAME$$`**.
+your custom prompts pattern to your files, wherever you need it. Pattern format is **`__NAME__`**.
 
 **Example**
 

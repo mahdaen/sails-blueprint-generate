@@ -2,7 +2,7 @@
 config.watch = {
     /* Grunt Watch Options */
     options : {
-        livereload : $$RELOAD$$
+        livereload : __RELOAD__
     },
 
     /* Watch public folder changes to support livereload */

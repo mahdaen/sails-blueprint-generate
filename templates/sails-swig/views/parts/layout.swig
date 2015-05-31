@@ -28,7 +28,7 @@
 
     {% if settings.env == 'development' -%}
         <!-- Livereload -->
-        <script type="text/javascript" src="http://localhost:$$RELOADPORT$$/livereload.js"></script>
+        <script type="text/javascript" src="http://localhost:__RELOADPORT__/livereload.js"></script>
     {%- endif %}
 </head>
     <body class="application">

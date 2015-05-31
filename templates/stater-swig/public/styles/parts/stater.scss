@@ -1,0 +1,70 @@
+/* ============ ><><><><><><><><>< Stater ><><><><><><><><>< ============ */
+/* ===========  Web Template Development is just like a Beer  =========== */
+/* ============ ><><><><><><><><><><><><><><><><><><><><><>< ============ */
+
+/* Stater Default Styles */
+.center {
+    @include container(1024px);
+    @include absolute-middle-center;
+    @include align-center;
+
+    padding    : 20px;
+    margin-top : -40px;
+
+    h1 {
+        @include font("Roboto" 72px 68px #84bd4f 400);
+
+        margin-bottom : 30px;
+    }
+
+    p {
+        font        : 18px 'Roboto';
+        font-weight : 400;
+        line-height : 26px;
+        color       : #999999;
+    }
+
+    .logo {
+        @include block(164px);
+
+        margin        : 0 auto;
+        margin-bottom : 30px;
+
+        img {
+            width : 100%;
+        }
+    }
+}
+
+.footer {
+    @include container(1024px);
+    @include absolute-bottom-center;
+    @include align-center;
+
+    padding        : 20px;
+    padding-bottom : 0;
+    margin-bottom  : 20px;
+
+    p {
+        font-size     : 12px;
+        color         : #999999;
+        line-height   : 16px;
+        margin-bottom : 0;
+    }
+
+    #copyright {
+        margin-bottom : 6px;
+        color         : #777777;
+    }
+
+    .link {
+        margin-top: 10px;
+    }
+}
+
+.gh-link {
+    @include font('Roboto' 16px 24px none 500);
+    @include uppercase;
+
+    padding-top : 40px;
+}

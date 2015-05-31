@@ -1,0 +1,27 @@
+{% extends 'parts/layout.html' -%}
+
+{# INCLUDE HEADER #}
+{% block header -%}
+    {% include 'parts/header.html' -%}
+{%- endblock %}
+
+{# Content Block #}
+{% block content -%}
+    <section class="center">
+        <div id="logo" class="logo">
+            <img src="{{ ROOT }}images/logo-ers.png" alt=""/>
+        </div>
+        <header>
+            <h1>Internal Server Error</h1>
+            <p>Wo wo! What's wrong? Empty gasoline? No brake? Please wait, we will fix it.</p>
+            {% if debug -%}
+                <p>{{ error.message }}</p>
+            {%- endif %}
+        </header>
+    </section>
+{%- endblock %}
+
+{# FOOTER INJECTION #}
+{% block footer -%}
+    {% include 'parts/footer.html' -%}
+{%- endblock %}

@@ -1,0 +1,28 @@
+{# EXTENDING LAYOUT #}
+{% extends 'parts/layout.html' -%}
+
+{# INCLUDE HEADER #}
+{% block header -%}
+    {% include 'parts/header.html' -%}
+{%- endblock %}
+
+{# CONTENT INJECTION #}
+{% block content -%}
+    <section class="center">
+        <div id="logo" class="logo">
+            <img src="{{ ROOT }}images/logo.png" alt="Stater"/>
+        </div>
+        <header>
+            <h1>Stater</h1>
+            <p>{{ model.home.welcome }}<br/>{{ model.home.extras }}</p>
+        </header>
+        <div class="gh-link">
+            <a href="https://github.com/mahdaen/stater">Read More</a>
+        </div>
+    </section>
+{%- endblock %}
+
+{# FOOTER INJECTION #}
+{% block footer -%}
+    {% include 'parts/footer.html' -%}
+{%- endblock %}

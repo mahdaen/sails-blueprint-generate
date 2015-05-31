@@ -1,0 +1,25 @@
+{# EXTENDING LAYOUT #}
+{% extends '../parts/layout.html' -%}
+
+{# INCLUDE HEADER #}
+{% block header -%}
+    {% include '../parts/header.html' -%}
+{%- endblock %}
+
+{# CONTENT INJECTION #}
+{% block content -%}
+    <section class="center">
+        <div id="logo" class="logo">
+            <img src="{{ ROOT }}images/logo.png" alt="Stater"/>
+        </div>
+        <header>
+            <h1>Stater About Page</h1>
+            <p>{{ raws( model['about.stater'].message ) }}</p>
+        </header>
+    </section>
+{%- endblock %}
+
+{# FOOTER INJECTION #}
+{% block footer -%}
+    {% include '../parts/footer.html' -%}
+{%- endblock %}

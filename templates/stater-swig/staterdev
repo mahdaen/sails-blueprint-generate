@@ -1,0 +1,1 @@
+./stater.js start && grunt watch && ./stater.js stop

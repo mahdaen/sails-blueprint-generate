@@ -1,0 +1,14 @@
+[
+    {
+        "name"    : "reloadport",
+        "type"    : "input",
+        "message" : "Livereload Port",
+        "default" : "9870"
+    },
+    {
+        "name"    : "devport",
+        "type"    : "input",
+        "message" : "Server Port",
+        "default" : "9015"
+    }
+]

@@ -1,0 +1,19 @@
+/* ============ ><><><><><><><><>< Stater ><><><><><><><><>< ============ */
+/* ===========  Web Template Development is just like a Beer  =========== */
+/* ============ ><><><><><><><><><><><><><><><><><><><><><>< ============ */
+
+// Import Development Libraries Here.
+@import "../libs/short-sass/dist/short-sass";
+
+// Import Application Styles For Production Here.
+@include normalize;
+@include reset;
+
+// Import Partials
+@import "parts/public";
+
+// Importing Pages
+@import "pages/home";
+
+// Stater Styles. Remove it if you won't use it.
+@import "parts/stater";
