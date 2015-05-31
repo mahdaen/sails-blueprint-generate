@@ -124,7 +124,7 @@ var processTemplate = function (nextans, answers) {
                 var fxt = paths.extname(file);
 
                 if (!fxt || fxt === '') fxt = '.?';
-                
+
                 var filename = file.replace(resDir, '');
 
                 if (injectdef.indexOf(fxt) > -1) {
