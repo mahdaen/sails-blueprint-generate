@@ -1,13 +1,15 @@
 {# Root Path #}
-{% if env === 'development' -%}
-    {% set ROOT = '/' %}
-{%- endif %}
+{% set ROOT = '/' %}
 
 <!doctype html>
 <html lang="en">
     <head>
         <!-- START META -->
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+        <meta name="format-detection" content="telephone=no">
         <meta name="description" content="{{ meta.description }}">
         <meta name="keyword" content="{{ meta.keyword }}">
         <!-- END META -->
@@ -66,7 +68,20 @@
 
         {% if env === 'development' && !_noreload -%}
             <!-- LIVERELOADS (DEVELOPMENT) -->
-            <script type="text/javascript" src="http://localhost:9320/livereload.js"></script>
+            <script type="text/javascript" src="http://localhost:__RELOADPORT__/livereload.js"></script>
+        {%- endif %}
+
+        {% if env === 'production' -%}
+            <!-- START ORGANIZATION LOGO -->
+            <script type="application/ld+json">
+                {
+                  "@context": "http://schema.org",
+                  "@type": "Organization",
+                  "url": "{{ htpr }}://{{ host }}",
+                  "logo": "{{ htpr }}://{{ host }}/images/logo.png"
+                }
+            </script>
+            <!-- END ORGANIZATION LOGO -->
         {%- endif %}
     </body>
 </html>

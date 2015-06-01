@@ -5,11 +5,17 @@
 /* Stater Default Styles */
 .center {
     @include container(1024px);
-    @include absolute-middle-center;
     @include align-center;
 
+    @include desktop {
+        @include absolute-middle-center;
+
+        margin-top : -40px;
+        margin-bottom: 0;
+    }
+
     padding    : 20px;
-    margin-top : -40px;
+    margin-bottom: 30px;
 
     h1 {
         @include font("Roboto" 72px 68px #84bd4f 400);
@@ -17,7 +23,7 @@
         margin-bottom : 30px;
     }
 
-    p {
+    h2 {
         font        : 18px 'Roboto';
         font-weight : 400;
         line-height : 26px;

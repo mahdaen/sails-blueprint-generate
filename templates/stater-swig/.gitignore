@@ -8,9 +8,6 @@ lib-cov
 build
 logs
 www
-
-# ============ ><><><><><><><><>< Stater ><><><><><><><><>< ============
-
 *~
 *#
 .tmp
@@ -23,4 +20,8 @@ www
 .netbeans
 .sass-cache
 .livereload
+/Robots.txt
+/sitemap.xml
 .node_history
+public/styles/main.css
+public/styles/main.css.map

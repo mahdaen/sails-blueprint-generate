@@ -89,6 +89,12 @@ grunt.registerTask('build', function (grunt) {
                             done(false);
                         }
                         else {
+                            core.logs.info('Writing sitemap.xml.', true);
+                            file.writeFileSync('build/sitemap.xml', core.sitemapurl);
+
+                            core.logs.info('Writing Robots.txt.', true);
+                            file.writeFileSync('build/Robots.txt', core.robots);
+
                             core.logs.info('Build process finished without error.', true);
                             done(true);
                         }

@@ -6,14 +6,17 @@
 
 /* Loading Dependencies and Configurations */
 var express = require('express'),
+    compres = require('compression'),
     config  = require('./config/stater'),
     exec    = require('child_process'),
     swig    = require('swig');
 
 /* Creating Application Data */
-var appData = {
-    env : process.ENV || 'development'
-};
+var appData = {};
+
+/* Getting Runtime Arguments */
+var cliArg = process.argv;
+var debugs = config.debug;
 
 /* Binding configurations to appData */
 Object.keys(config).forEach(function (title) {
@@ -30,15 +33,6 @@ Object.keys(config.filter).forEach(function (filter) {
 
 /* Swig Renderer */
 var render = swig.renderFile;
-
-/* Getting Runtime Arguments */
-var cliArg = process.argv;
-var debugs = appData.debug = (cliArg.indexOf('--debug') > -1 ? true : false);
-
-/* Remove Livereload using CLI Argument */
-if ( cliArg.indexOf('--clean') > -1 ) {
-    appData._noreload = true;
-}
 
 /* Start Server only if "start" argument is defined */
 var initStater = false;
@@ -62,8 +56,58 @@ if ( initStater ) {
     /* Creating New Host */
     var app = express();
 
-    /* Serving Static Files */
-    app.use(express.static('public'));
+    /* Enable Express Compression */
+    if ( appData.env === 'production' ) {
+        app.use(compres({
+            filter : function (req, res) {
+                if ( req.headers[ 'x-no-compression' ] ) {
+                    // don't compress responses with this request header
+                    return false
+                }
+
+                // fallback to standard filter function
+                return compres.filter(req, res)
+            }
+        }));
+    }
+
+    /* Serve server from "build" folder on production, and use router on development */
+    if ( appData.env === 'production' ) {
+        /* Serving Static Files */
+        app.use(express.static('build', { etag : true, maxAge : 604800000 }));
+    }
+    else {
+        /* Serving Static Files */
+        app.use(express.static('public'));
+    }
+
+    /* Request Logger */
+    app.all('*', function (req, res, next) {
+        var hostname = req.headers.host.split(":")[ 0 ];
+
+        config.logs.info('Initializing request ' + config.htpr + '://' + hostname + ':' + config.port + req.path);
+        /* Dissalow requesting from wrong host */
+        if ( config.env === 'production' ) {
+            if ( hostname !== config.host ) {
+                /* Redirect IP Address */
+                if ( hostname.match(/(?:[0-9]{1,3}\.){3}[0-9]{1,3}/) ) {
+                    res.redirect(config.htpr + '://' + config.host);
+                }
+                else {
+                    var err = new Error('Forbidden. Not allowed to request from different host.');
+
+                    err.status = 403;
+                    next(err);
+                }
+            }
+            else {
+                next();
+            }
+        }
+        else {
+            next();
+        }
+    });
 
     /* Registering Routers */
     config.router.forEach(function (router) {
@@ -153,8 +197,8 @@ if ( initStater ) {
     });
 
     /* Starting Server */
-    var host = app.listen(config.port, function () {
-        config.logs.info('Server listening at: http://127.0.0.1:' + config.port);
+    var host = app.listen(appData.port, function () {
+        config.logs.info('Server listening at: ' + appData.htpr + '://' + appData.host + ':' + appData.port + ' on ' + appData.env + ' environtment.');
     });
 }
 

@@ -5,6 +5,7 @@
     "main"            : "stater.js",
     "dependencies"    : {
         "colors"               : "^1.1.0",
+        "compression"          : "^1.4.4",
         "express"              : "^4.12.4",
         "fs-extra"             : "^0.18.4",
         "glob"                 : "^5.0.10",
