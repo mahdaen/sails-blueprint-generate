@@ -8,16 +8,18 @@
 
 {# CONTENT INJECTION #}
 {% block content -%}
-    <section class="center">
+    <section id="content" class="center">
         <div id="logo" class="logo">
             <img src="{{ ROOT }}images/logo.png" alt="Stater"/>
         </div>
         <header>
             <h1>Stater</h1>
-            <h2>{{ model.home.welcome }}<br/>{{ model.home.extras }}</h2>
+            <h2>{{ raws(model.home.welcome) }}<br/>{{ raws(model.home.extras) }}</h2>
         </header>
         <div class="gh-link">
-            <a href="https://github.com/mahdaen/stater">Read More</a>
+            <nav>
+                <a href="https://github.com/mahdaen/stater">Read More</a>
+            </nav>
         </div>
     </section>
 {%- endblock %}

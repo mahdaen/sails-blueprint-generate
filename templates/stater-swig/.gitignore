@@ -20,8 +20,8 @@ www
 .netbeans
 .sass-cache
 .livereload
-/Robots.txt
-/sitemap.xml
 .node_history
+public/robots.txt
+public/sitemap.xml
 public/styles/main.css
 public/styles/main.css.map

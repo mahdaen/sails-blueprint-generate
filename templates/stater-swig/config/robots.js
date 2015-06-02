@@ -6,7 +6,17 @@
  * Generate Robots.txt
  */
 
-module.exports = {
-    userAgent : '*',
-    disallow  : []
-}
+module.exports = [
+    {
+        userAgent : '*',
+        disallow  : [
+            ''
+        ]
+    },
+    {
+        userAgent : 'libwww-perl',
+        disallow  : [
+            '/'
+        ]
+    }
+]

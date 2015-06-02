@@ -1,0 +1,155 @@
+#! /usr/bin/env node
+
+/* ============ ><><><><><><><><>< Stater ><><><><><><><><>< ============ */
+/* ===========  Web Template Development is just like a Beer  =========== */
+/* ============ ><><><><><><><><><><><><><><><><><><><><><>< ============ */
+
+'use strict';
+
+/* Loading Required Modules */
+var sudo = require('child_process').exec,
+    info = require('./package.json'),
+    root = __dirname;
+
+/* Getting Arguments */
+var args = process.argv;
+var earg = args.slice(3).join(' ');
+var flog = '-l ' + root + '/logs/foreverlog.log -a';
+var debg = false;
+
+if ( args.indexOf('--debug') > -1 ) {
+    debg = true;
+    flog += ' --verbose';
+}
+else {
+    flog = '';
+}
+
+/* Display Help */
+var showHelp = function() {
+    console.log('\r\n');
+    console.log('\tStater Based Application');
+    console.log('\t' + info.name + ' => v' + info.version);
+    console.log('\t' + info.description);
+
+    console.log('\r\n\tUSAGE:');
+    console.log('\tnode stater [options] \r\n\t./stater.js [options] (if stater.js file is executable)\r\n');
+
+    console.log('\tstart\t\t Start the server.');
+    console.log('\tstop\t\t Stop the server.');
+    console.log('\trestart\t\t Restart server.');
+    console.log('\tdevelop\t\t Start server in development mode.');
+    console.log('\tbuild\t\t Build to Static HTML files (Web Template).\r\n\t\t\t Compiled files located at "build" folder.');
+
+    console.log('\r\n\tTo start Stater in development mode, run: ./staterdev');
+    console.log('\tServer (and browser) will be reloaded on file changes.\r\n');
+}
+
+/* Reading Arguments */
+if ( args.length >= 3 ) {
+    var carg = args[ 2 ];
+
+    switch ( carg ) {
+        case 'start':
+            console.log('Starting Stater...');
+
+            sudo('forever ' + flog + ' stop app.js', function () {
+                sudo('forever ' + flog + ' start app.js start ' + earg, function (err, std) {
+                    if ( err ) {
+                        console.log(err);
+                    }
+                    else {
+                        console.log(std);
+                    }
+                });
+            });
+
+            break;
+        case 'stop':
+            console.log('Stopping Stater...');
+
+            sudo('forever ' + flog + ' stop app.js', function (err, std) {
+                if ( err ) {
+                    console.log('Error while stopping server!');
+
+                    if ( debg ) {
+                        console.log(err);
+                    }
+                }
+                else {
+                    console.log(std);
+                }
+
+                sudo('forever ' + flog + ' stop Gruntfile.js', function (err, std) {
+                    if ( err ) {
+                        console.log(err);
+                    }
+                    else {
+                        console.log(std);
+                    }
+                });
+            });
+
+            break;
+        case 'restart':
+            console.log('Restarting Stater...');
+
+            sudo('forever ' + flog + ' restart app.js ' + earg, function (err, std) {
+                if ( err ) {
+                    console.log(err);
+                }
+                else {
+                    console.log(std);
+                }
+            });
+
+            break;
+        case 'develop':
+            console.log('Starting Stater in development mode...');
+
+            sudo('forever ' + flog + ' stop app.js', function () {
+                sudo('forever ' + flog + ' start app.js start ' + earg + ' && forever ' + flog + ' start Gruntfile.js develop', function (err, std) {
+                    if ( err ) {
+                        console.log(err);
+                    }
+                    else {
+                        console.log(std);
+                    }
+                });
+            });
+
+            break;
+        case 'build':
+            console.log('Building Stater to static site...');
+
+            sudo('grunt build ' + earg, function (err, std) {
+                if ( err ) {
+                    console.log(err);
+                }
+                else {
+                    console.log(std);
+                }
+            });
+
+            break;
+        case '-h':
+            showHelp();
+
+            break;
+        case '-v':
+            console.log(info.version);
+
+            break;
+        default :
+            console.log('Invalid command: ' + carg);
+            showHelp();
+
+            break;
+    }
+}
+
+/* Assume to start the server */
+else {
+    console.log('At least one command is required!');
+    showHelp();
+}

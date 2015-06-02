@@ -24,7 +24,9 @@ Object.keys(config).forEach(function (title) {
 });
 
 /* Configuring Swig */
-swig.setDefaults({ cache : false });
+if ( config.env === 'production' && config.cached ) {
+    swig.setDefaults({ cache : false });
+}
 
 /* Adding Filters to Swig */
 Object.keys(config.filter).forEach(function (filter) {
@@ -72,7 +74,7 @@ if ( initStater ) {
     }
 
     /* Serve server from "build" folder on production, and use router on development */
-    if ( appData.env === 'production' ) {
+    if ( appData.env === 'production' && config.cached ) {
         /* Serving Static Files */
         app.use(express.static('build', { etag : true, maxAge : 604800000 }));
     }
@@ -86,19 +88,11 @@ if ( initStater ) {
         var hostname = req.headers.host.split(":")[ 0 ];
 
         config.logs.info('Initializing request ' + config.htpr + '://' + hostname + ':' + config.port + req.path);
-        /* Dissalow requesting from wrong host */
-        if ( config.env === 'production' ) {
-            if ( hostname !== config.host ) {
-                /* Redirect IP Address */
-                if ( hostname.match(/(?:[0-9]{1,3}\.){3}[0-9]{1,3}/) ) {
-                    res.redirect(config.htpr + '://' + config.host);
-                }
-                else {
-                    var err = new Error('Forbidden. Not allowed to request from different host.');
 
-                    err.status = 403;
-                    next(err);
-                }
+        /* Redirect to original host if requested with different host */
+        if ( config.env && cliArg.indexOf('--noredir') < 0 ) {
+            if ( hostname !== config.host ) {
+                res.redirect(config.htpr + '://' + config.host);
             }
             else {
                 next();
@@ -147,6 +141,11 @@ if ( initStater ) {
                     });
                 }
                 else {
+                    /* Enable Caching on production */
+                    if ( config.env === 'production' && config.cached ) {
+                        res.header('Cache-Control', 'public, max-age=60000');
+                    }
+
                     res.send(html);
 
                     config.logs.res(res);
