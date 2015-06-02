@@ -88,7 +88,7 @@
 
         {% if env === 'development' && !_noreload -%}
             <!-- LIVERELOADS (DEVELOPMENT) -->
-            <script type="text/javascript" src="http://localhost:__RELOADPORT__/livereload.js"></script>
+            <script type="text/javascript" src="http://localhost:{{ reloadport }}/livereload.js"></script>
         {%- endif %}
 
         {% if env === 'production' -%}

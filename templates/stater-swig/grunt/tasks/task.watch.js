@@ -7,9 +7,10 @@ var args = process.argv;
 var earg = args.slice(3).join(' ');
 var flog = '-l ' + root + '/logs/foreverlog.log -a';
 
-if (args.indexOf('--debug') > -1) {
+if ( args.indexOf('--debug') > -1 ) {
     flog += ' --verbose';
-} else {
+}
+else {
     flog = '';
 }
 
@@ -17,7 +18,7 @@ if (args.indexOf('--debug') > -1) {
 config.watch = {
     /* Grunt Watch Options */
     options : {
-        livereload : __RELOADPORT__
+        livereload : core.reloadport
     },
 
     /* Static Files will reload browser directly */

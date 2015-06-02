@@ -21,25 +21,48 @@ var logger = require('./logger');
 
 /* Creating Configuration Data */
 var configs = {
-    assets : require('./assets'),
-    router : require('./router'),
-    filter : require('./filters'),
+    assets     : require('./assets'),
+    router     : require('./router'),
+    filter     : require('./filters'),
+    model      : {},
+    menus      : {},
 
-    model  : {},
-    menus  : {},
-    env    : process.ENV || 'development',
-    cached : true,
+    /* Server Configurations */
+    env        : process.ENV || 'development',
+    htpr       : '__PROTOCOL__',
+    port       : __SPORT__,
+    host       : '__SHOST__',
+    logs       : new logger(),
+    meta       : require('./meta'),
+    cached     : true,
 
-    htpr : '__PROTOCOL__',
-    port : __SPORT__,
-    host : '__SHOST__',
-    logs : new logger(),
-    meta : require('./meta'),
+    /* Live Reload Port */
+    reloadport : __RELOADPORT__,
 
-    raws : function (text) {
+    /* Read data without autoescape */
+    raws       : function (text) {
         return text;
     }
 };
+
+/* Getting Custom Configs */
+var usrconfigs;
+
+try {
+    usrconfigs = require('../config.json');
+
+    if ( usrconfigs ) {
+        for ( var key in usrconfigs ) {
+            if ( key === 'port' || key === 'reloadport' ) {
+                configs[ key ] = Number(usrconfigs[ key ]);
+            }
+            else {
+                configs[ key ] = usrconfigs[ key ];
+            }
+        }
+    }
+}
+catch ( e ) {}
 
 /* Getting Runtime Flags */
 var cliArg = process.argv;

@@ -9,6 +9,7 @@
 /* Loading Required Modules */
 var sudo = require('child_process').exec,
     info = require('./package.json'),
+    file = require('fs'),
     root = __dirname;
 
 /* Getting Arguments */
@@ -25,24 +26,50 @@ else {
     flog = '';
 }
 
+/* Save Configs */
+var saveConfig = function (configs, tfile) {
+    if ( config && tfile ) {
+        file.writeFile(tfile, JSON.stringify(configs), function (err, std) {
+            if ( err ) {
+                console.log(err);
+            }
+            else {
+                console.log('Configurations saved.');
+            }
+        });
+    }
+}
+
 /* Display Help */
-var showHelp = function() {
+var showHelp = function () {
     console.log('\r\n');
     console.log('\tStater Based Application');
     console.log('\t' + info.name + ' => v' + info.version);
-    console.log('\t' + info.description);
+    console.log('\thttp://stater.mahdaen.name');
 
     console.log('\r\n\tUSAGE:');
-    console.log('\tnode stater [options] \r\n\t./stater.js [options] (if stater.js file is executable)\r\n');
+    console.log('\t./stater [options]\r\n');
 
     console.log('\tstart\t\t Start the server.');
     console.log('\tstop\t\t Stop the server.');
     console.log('\trestart\t\t Restart server.');
     console.log('\tdevelop\t\t Start server in development mode.');
     console.log('\tbuild\t\t Build to Static HTML files (Web Template).\r\n\t\t\t Compiled files located at "build" folder.');
+    console.log('\tinfo\t\t Show application data/infos or specific info. E.g: ./stater info && ./stater info host');
+    console.log('\tconfig\t\t Apply custom configurations to server, to start server without giving custom flags.');
+    console.log('\t\t\t Custom configs is for hosting purpose and ignored in git.');
+    console.log('\t\t\t E.g: ./stater config => Will show configuration wizard.');
+    console.log('\t\t\t E.g: ./stater config port 8004 => Set port to 8004.');
 
-    console.log('\r\n\tTo start Stater in development mode, run: ./staterdev');
-    console.log('\tServer (and browser) will be reloaded on file changes.\r\n');
+    console.log('\r\n');
+    console.log('\t--port\t\t Start the server with custom port. E.g: ./stater start --port=8003');
+    console.log('\t--host\t\t Start the server with custom host. E.g: ./stater start --host=localdev');
+    console.log('\t--https\t\t Start the server with https.');
+    console.log('\t--debug\t\t Enable debug mode (forever).');
+    console.log('\r\n');
+    console.log('\t-v | version\t Show Stater version.');
+    console.log('\t-h | help\t Show this help');
+    console.log('\r\n');
 }
 
 /* Reading Arguments */
@@ -132,12 +159,131 @@ if ( args.length >= 3 ) {
             });
 
             break;
+        case 'info':
+            var config = require('./app');
+
+            if ( args.length >= 4 ) {
+                var info = args[ 3 ];
+
+                if ( info && config[ info ] ) {
+                    console.log(config[ info ]);
+                }
+                else {
+                    console.log(info + ' is not an Stater info.');
+                }
+            }
+            else {
+                console.log(config);
+            }
+
+            break;
+        case 'config':
+            /* Getting App Configs */
+            var config = require('./app'), myconf;
+
+            /* Creating Custom Config if not exists */
+            myconf = {
+                env        : config.env,
+                host       : config.host,
+                port       : config.port,
+                htpr       : config.htpr,
+                cached     : config.cached,
+                reloadport : config.reloadport
+            }
+
+            /* Check if single config or config wizard */
+            if ( args.length >= 4 ) {
+                var prop = args[ 3 ];
+
+                if ( prop && prop in myconf ) {
+                    if ( args.length >= 5 ) {
+                        if ( prop === 'port' || prop === 'reloadport' ) {
+                            myconf[ prop ] = Number(args[ 4 ]);
+                        }
+                        else {
+                            myconf[ prop ] = args[ 4 ];
+                        }
+
+                        /* Saving custom configs */
+                        saveConfig(myconf, './config.json');
+                    }
+                    else {
+                        console.log('Value for "' + prop + '" is required.');
+                    }
+                }
+                else {
+                    console.log('"' + prop + '" is not a part of Custom Config.');
+                }
+            }
+            else {
+                require('inquirer').prompt([
+                    {
+                        type    : 'input',
+                        name    : 'env',
+                        message : 'Environtment',
+                        default : myconf.env
+                    },
+                    {
+                        type    : 'list',
+                        name    : 'htpr',
+                        message : 'Protocol',
+                        choices : [ 'http', 'https' ],
+                        default : (myconf.htpr === 'http' ? 0 : 1)
+                    },
+                    {
+                        type    : 'input',
+                        name    : 'host',
+                        message : 'Host Name',
+                        default : myconf.host
+                    },
+                    {
+                        type    : 'input',
+                        name    : 'port',
+                        message : 'Server Port',
+                        default : myconf.port
+                    },
+                    {
+                        type    : 'input',
+                        name    : 'cached',
+                        message : 'Enable Page Caching',
+                        default : myconf.cached
+                    },
+                    {
+                        type    : 'input',
+                        name    : 'reloadport',
+                        message : 'Livereload Port',
+                        default : myconf.reloadport
+                    },
+                ], function (answers) {
+                    for ( var key in answers ) {
+                        if ( key === 'port' || key === 'reloadport' ) {
+                            myconf[ key ] = Number(answers[ key ]);
+                        }
+                        else {
+                            myconf[ key ] = answers[ key ];
+                        }
+                    }
+
+                    /* Saving custom configs */
+                    saveConfig(myconf, './config.json');
+                });
+            }
+
+            break;
         case '-h':
             showHelp();
 
             break;
+        case 'help':
+            showHelp();
+
+            break;
         case '-v':
-            console.log(info.version);
+            console.log(info.name + ' - v' + info.version);
+
+            break;
+        case 'version':
+            console.log(info.name + ' - v' + info.version);
 
             break;
         default :

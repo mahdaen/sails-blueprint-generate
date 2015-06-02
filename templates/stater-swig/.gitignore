@@ -18,6 +18,7 @@ www
 *.seed
 .DS_STORE
 .netbeans
+config.json
 .sass-cache
 .livereload
 .node_history

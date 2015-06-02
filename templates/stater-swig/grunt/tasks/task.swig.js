@@ -6,7 +6,7 @@
 
 /* Swig Options */
 var options = {
-    data : load('config/stater')
+    data : core
 }
 
 /* Development */

@@ -20,7 +20,8 @@ if ( cliArg.length >= 3 && cliArg[ 2 ] === 'develop' ) {
             console.log(std);
         }
     });
-} else {
+}
+else {
 
     /* Extensions */
     var path = require('path'),
@@ -36,6 +37,7 @@ if ( cliArg.length >= 3 && cliArg[ 2 ] === 'develop' ) {
             path  : path,
             file  : file,
             swig  : swig,
+            core  : require('./app'),
 
             /* Require Proxy, to load from __dirname path instead node-import path */
             load  : function (file) {

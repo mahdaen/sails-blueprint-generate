@@ -1,7 +1,6 @@
 /* Building Javascripts */
 grunt.registerTask('build', function (grunt) {
-    var core = require(root + '/app.js'),
-        sudo = require('child_process').exec,
+    var sudo = require('child_process').exec,
         fsex = require('fs-extra'),
         done = this.async(),
         swig = require('swig');
