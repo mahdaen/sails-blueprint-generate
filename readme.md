@@ -166,6 +166,7 @@ macbook:projects euser$
 * **`sails-swig`** - Sails Blueprint with Swig Template Engine
 * **`sails-swig-bootstrap`** - Sails Blueprint with Swig Template Engine and Bootstrap
 * **`sails-swig-foundation`** - Sails Blueprint with Swig Template Engine and Foundation
+* **`stater-swig`** - Front-End Template with NodeJS server [Stater](http://stater.mahdaen.name)
 
 ***
 ## **Creating Template**
