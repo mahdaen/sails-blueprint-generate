@@ -3,5 +3,6 @@
 /* ============ ><><><><><><><><><><><><><><><><><><><><><>< ============ */
 
 module.exports = {
-    title: 'Not found'
+    $name : '404 Page',
+    title : 'Not found'
 }

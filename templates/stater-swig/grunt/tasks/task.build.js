@@ -12,7 +12,8 @@ grunt.registerTask('build', function (grunt) {
     var render = function () {
         if ( core.router.length > 0 ) {
             var route = core.router[ 0 ],
-                cpath = route.path, opath = route.path;
+                cpath = route.path, opath = route.path,
+                model = core.model;
 
             if ( cpath === '/' || cpath === '' ) {
                 cpath = '/home';
@@ -26,20 +27,18 @@ grunt.registerTask('build', function (grunt) {
             }
 
             core.logs.info('⦿ ' + cpath, true);
+            core.menus.$current = route;
 
             cpath = cpath.replace(/^\//, '').replace('/', '.');
 
             /* Find data related with path */
-            if ( cpath in core && core.meta ) {
+            if ( model.get(cpath) && core.meta ) {
                 Object.keys(core.meta).forEach(function (key) {
-                    if ( key in core[ cpath ] ) {
-                        core.meta[ key ] = core[ cpath ][ key ];
+                    if ( key in model.get(cpath) ) {
+                        core.meta[ key ] = model.get(cpath)[ key ];
                     }
                 });
             }
-
-            /* Reduce Router */
-            core.router = core.router.slice(1);
 
             /* Render HTML */
             var html = swig.render(file.readFileSync(route.view, 'utf8'), { filename : route.view, locals : core });
@@ -47,9 +46,12 @@ grunt.registerTask('build', function (grunt) {
             if ( html ) {
                 fsex.ensureFileSync('build/' + route.view.replace(/views\//, ''));
                 file.writeFileSync('build/' + route.view.replace(/views\//, ''), html);
-
-                render();
             }
+
+            /* Reduce Router */
+            core.router = core.router.slice(1);
+
+            render();
         }
         else {
             /* Final Steps */

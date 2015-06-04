@@ -1,8 +1,8 @@
 <!-- FOOTER INJECTIONS -->
-<footer class="footer">
+<footer class="footer{% if footclass -%}{{ ' ' + footclass }}{%- endif %}">
     <p id="copyright">© 2015 Stater. All right reserved.</p>
     <p class="description">Stater is a HTML Template Blueprint including static web server based on node js. Stater help <em>front-end developer</em> to develop their template without headache.</p>
-    <p class="link">
-        <a href="/">Home Page</a> | <a href="/403">403 Page</a> | <a href="/404">404 Page</a> | <a href="/500">500 Page</a> | <a href="/about/stater">Sub Page Routing</a>
-    </p>
+    <div class="link">
+        {{ parseMenu(menus) }}
+    </div>
 </footer>

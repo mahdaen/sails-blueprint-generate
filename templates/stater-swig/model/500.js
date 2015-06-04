@@ -3,5 +3,6 @@
 /* ============ ><><><><><><><><><><><><><><><><><><><><><>< ============ */
 
 module.exports = {
-    title: 'Internal Server Error'
+    $name : '500 Page',
+    title : 'Internal Server Error'
 }

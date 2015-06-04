@@ -24,5 +24,6 @@
 
 {# FOOTER INJECTION #}
 {% block footer -%}
+    {% set footclass = '' %}
     {% include 'parts/footer.html' -%}
 {%- endblock %}

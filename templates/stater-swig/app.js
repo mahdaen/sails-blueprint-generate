@@ -7,7 +7,7 @@
 /* Loading Dependencies and Configurations */
 var express = require('express'),
     compres = require('compression'),
-    config  = require('./config/stater'),
+    config  = require('./core/stater'),
     exec    = require('child_process'),
     swig    = require('swig');
 
@@ -24,8 +24,10 @@ Object.keys(config).forEach(function (title) {
 });
 
 /* Configuring Swig */
+swig.setDefaults({ cache : false });
+
 if ( config.env === 'production' && config.cached ) {
-    swig.setDefaults({ cache : false });
+    swig.setDefaults({ cache : 'memory' });
 }
 
 /* Adding Filters to Swig */
@@ -106,26 +108,22 @@ if ( initStater ) {
     /* Registering Routers */
     config.router.forEach(function (router) {
         app.get(router.path, function (req, res) {
-            var reqpath;
             /* Loggin Request */
             config.logs.req(req);
 
-            /* Creating Request Path */
-            reqpath = req.path;
-
-            if ( req.path === '/' ) reqpath = '/home';
-
-            /* Getting Path Name */
-            reqpath = reqpath.replace(/^\//, '').replace(/\//g, '.');
+            /* Getting Model */
+            var cmodel = appData.model.get(router.name);
 
             /* Find data related with path */
-            if ( reqpath in appData.model && appData.meta ) {
+            if ( cmodel && appData.meta ) {
                 Object.keys(appData.meta).forEach(function (key) {
-                    if ( key in appData.model[ reqpath ] ) {
-                        appData.meta[ key ] = appData.model[ reqpath ][ key ];
+                    if ( key in cmodel ) {
+                        appData.meta[ key ] = cmodel[ key ];
                     }
                 });
             }
+
+            appData.menus.$current = router;
 
             /* Rendering Views with appData as appData */
             render('./' + router.view, appData, function (err, html) {

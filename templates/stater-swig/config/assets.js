@@ -9,35 +9,6 @@
  */
 
 module.exports = {
-    /* Application Icons */
-    appicon : [
-        {
-            rel: 'apple-touch-icon-precomposed',
-            size: '144x144',
-            href: 'icons/app-icon.144.png'
-        },
-        {
-            rel: 'apple-touch-icon-precomposed',
-            size: '114x114',
-            href: 'icons/app-icon.114.png'
-        },
-        {
-            rel: 'apple-touch-icon-precomposed',
-            size: '72x72',
-            href: 'icons/app-icon.72.png'
-        },
-        {
-            rel: 'apple-touch-icon-precomposed',
-            size: '57x57',
-            href: 'icons/app-icon.57.png'
-        },
-        {
-            rel: 'shortcut icon',
-            type: 'image/vnd.microsoft.icon',
-            href: 'icons/favicon.ico'
-        },
-    ],
-
     /* Script Assets */
     scripts : [
         'libs/jquery/dist/jquery.js',

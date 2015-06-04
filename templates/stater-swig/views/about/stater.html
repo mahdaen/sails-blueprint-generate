@@ -14,12 +14,13 @@
         </div>
         <header>
             <h1>Stater About Page</h1>
-            <h2>{{ raws( model['about.stater'].message ) }}</h2>
+            <h2>{{ raws( model.about.stater.message ) }}</h2>
         </header>
     </section>
 {%- endblock %}
 
 {# FOOTER INJECTION #}
 {% block footer -%}
+    {% set footclass = '' %}
     {% include '../parts/footer.html' -%}
 {%- endblock %}

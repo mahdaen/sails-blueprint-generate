@@ -3,7 +3,8 @@
 /* ============ ><><><><><><><><><><><><><><><><><><><><><>< ============ */
 
 module.exports = {
-    title   : "About Page",
+    $name : 'Stater',
+    title : "About Page",
 
     message : "Do you know? You don\"t need to add router and etc to get page such this working. " +
     "What you need to do is only create html file inside views folder, and then you can visit that " +

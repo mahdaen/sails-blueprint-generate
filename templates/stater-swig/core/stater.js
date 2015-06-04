@@ -10,6 +10,7 @@
 var color = require('colors/safe'),
     find  = require('glob'),
     file  = require('fs'),
+    tree  = require('./tree'),
     path  = require('path');
 
 /* Getting Verbose Mode */
@@ -21,11 +22,10 @@ var logger = require('./logger');
 
 /* Creating Configuration Data */
 var configs = {
-    assets     : require('./assets'),
-    router     : require('./router'),
-    filter     : require('./filters'),
-    model      : {},
-    menus      : {},
+    router     : require('./router').lists,
+    menus      : require('./router').menus,
+    model      : new tree(),
+    plugin     : {},
 
     /* Server Configurations */
     env        : process.ENV || 'development',
@@ -33,8 +33,8 @@ var configs = {
     port       : __SPORT__,
     host       : '__SHOST__',
     logs       : new logger(),
-    meta       : require('./meta'),
-    cached     : true,
+    meta       : require('../config/meta'),
+    cached     : false,
 
     /* Live Reload Port */
     reloadport : __RELOADPORT__,
@@ -42,8 +42,69 @@ var configs = {
     /* Read data without autoescape */
     raws       : function (text) {
         return text;
-    }
+    },
+
+    /* Extras */
+    assets     : require('../config/assets'),
+    filter     : require('../config/filters'),
+
+    /* Current Path */
+    current    : { view : '' }
 };
+
+/* Menu Extractor */
+configs.parseMenu = function (menus) {
+    /* Sorting Menu */
+    var numb = [], char = [ 'home' ];
+
+    Object.keys(menus).forEach(function (key) {
+        if ( Number(key) ) {
+            numb.push(key);
+        }
+        else {
+            if ( key !== 'home' ) {
+                char.push(key);
+            }
+        }
+    });
+
+    char = char.concat(numb.sort());
+
+    /* Creating Menu */
+    var menu = '<ul>', skip = [ '$current', '$link', '$view', '$path', '$name' ];
+
+    var parse = function (mni) {
+        var cr = menus.$current.view === mni.$view ? ' class="current"' : '';
+
+        var ms = '<li>' + '<a href="' + mni.$link + '"' + cr + '>' + '<span>' + mni.$name + '</span>' + '</a>';
+
+        if ( Object.keys(mni).length > 5 ) {
+            ms += '<ul>';
+
+            for ( var sub in mni ) {
+                if ( skip.indexOf(sub) < 0 ) {
+                    ms += parse(mni[ sub ]);
+                }
+            }
+
+            ms += '</ul>';
+        }
+
+        ms += '</li>';
+
+        return ms;
+    }
+
+    char.forEach(function (key) {
+        if ( skip.indexOf(key) < 0 ) {
+            menu += parse(menus[ key ]);
+        }
+    });
+
+    menu += '</ul>'
+
+    return menu;
+}
 
 /* Getting Custom Configs */
 var usrconfigs;
@@ -76,6 +137,7 @@ if ( cliArg.indexOf('--clean') > -1 ) {
 /* Change Environtment by runtime flags */
 if ( cliArg.indexOf('--prod') > -1 ) {
     configs.env = 'production';
+    configs.cached = true;
 }
 
 /* Change Environtment by runtime flags */
@@ -102,17 +164,39 @@ cliArg.forEach(function (arg) {
     }
 });
 
-/* Registering Menus and Creating Sitemaps */
-var sitemap = file.readFileSync('./config/sitemap.xml', 'utf8');
+/* Collecting Models */
+var models = find.sync('model/**/*.js');
+
+/* Binding Models to Configuration Data */
+models.forEach(function (name) {
+    /* Getting Model Name */
+    var modelName = name.replace('model/', '').replace(/\//g, '.').replace(/\.js$/, '');
+
+    /* Getting Model Data */
+    try {
+        var data = require('../' + name);
+
+        if ( data ) {
+            configs.model.set(modelName, data);
+
+            if ( data.$name && configs.menus.get(modelName) ) {
+                configs.menus.set(modelName + '.$name', data.$name);
+            }
+        }
+    }
+    catch ( err ) {
+        configs.logs.warn(err);
+    }
+});
+
+/* Creating Sitemaps */
+var sitemap = file.readFileSync('./core/sitemap.xml', 'utf8');
 var siteurl = '';
 
 configs.router.forEach(function (route) {
     var name = route.path.replace(/^\//, '').replace(/\//g, '.');
 
     if ( name === '' ) {
-        /* Adding Menu */
-        configs.menus[ 'home' ] = '/'
-
         /* Adding Sitemap URL */
         siteurl += '' +
         '\t<url>\r\n' +
@@ -121,9 +205,6 @@ configs.router.forEach(function (route) {
         '\t</url>\r\n';
     }
     else {
-        /* Adding Menu */
-        configs.menus[ name ] = route.path;
-
         /* Adding Sitemap URL */
         siteurl += '' +
         '\t<url>\r\n' +
@@ -139,14 +220,8 @@ configs.sitemapurl = sitemap;
 
 file.writeFileSync('./public/sitemap.xml', sitemap);
 
-/* Registering Custom Menus */
-var cmenus = require('./menu');
-Object.keys(cmenus).forEach(function (name) {
-    configs.menus[ name ] = cmenus[ name ];
-});
-
 /* Generating Robots.txt */
-var robots = require('./robots');
+var robots = require('../config/robots');
 var robotx = '';
 
 robots.forEach(function (rob) {
@@ -161,24 +236,36 @@ configs.robots = robotx;
 
 file.writeFileSync('./public/robots.txt', robotx);
 
-/* Collecting Models */
-var models = find.sync('model/**/*.js');
+/* Registering Custom Menus */
+var cmenus = require('../config/menu');
 
-/* Binding Models to Configuration Data */
-models.forEach(function (name) {
+Object.keys(cmenus).forEach(function (name) {
+    configs.menus[ name ] = cmenus[ name ];
+});
+
+/* Loading Plugins */
+var plugins = find.sync('plugin/*.js');
+
+plugins.forEach(function (name) {
     /* Getting Model Name */
-    var modelName = path.parse(name).name.toLowerCase();
+    var plgname = path.parse(name).name.toLowerCase(), plg;
 
     /* Getting Model Data */
     try {
-        var data = require('../' + name);
-
-        if ( data ) {
-            configs.model[ modelName ] = data;
-        }
+        var plg = require('../' + name);
     }
     catch ( err ) {
         configs.logs.warn(err);
+    }
+
+    if ( plg ) {
+        if ( plg.init ) {
+            plg.init(configs);
+        }
+
+        if ( plg.code ) {
+            configs.plugin[ plgname ] = plg.code;
+        }
     }
 });
 

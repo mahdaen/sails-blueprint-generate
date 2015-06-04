@@ -34,7 +34,7 @@ config.watch = {
 
     /* Server Files will reload browser afrer rebooting server */
     server  : {
-        files : [ '!.idea', '!build', '!node_modules', 'model/**', 'config/**', 'app.js' ],
+        files : [ '!.idea', '!build', '!node_modules', 'model/**', 'config/**', 'core/**', 'grunt/**', 'plugin/**', 'app.js' ],
         tasks : [ 'reboot' ]
     }
 }
@@ -57,7 +57,7 @@ grunt.registerTask('reboot', function () {
 
             setTimeout(function () {
                 done(true);
-            }, 400);
+            }, 500);
         }
     });
 });

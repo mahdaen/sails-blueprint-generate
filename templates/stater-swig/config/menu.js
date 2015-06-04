@@ -10,6 +10,10 @@
  */
 
 module.exports = {
-    home : '/',
-    help : 'http://github.com/mahdaen/stater#readme'
+    help : {
+        $name : 'Help',
+        $path : 'help',
+        $view : '',
+        $link : 'http://github.com/mahdaen/stater#readme'
+    }
 }

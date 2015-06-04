@@ -3,5 +3,6 @@
 /* ============ ><><><><><><><><><><><><><><><><><><><><><>< ============ */
 
 module.exports = {
-    title: 'Forbidden'
+    $name : '403 Page',
+    title : 'Forbidden'
 }
