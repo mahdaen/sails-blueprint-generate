@@ -2,7 +2,7 @@
 
 <br>
 <br>
-# Stater.
+# Stater
 
 Did you know? This block is writen in **`Markdown`** format.
 **This is bold**, __bold as well__, *this is italic*, _italic as well_

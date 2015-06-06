@@ -7,25 +7,12 @@
     @include container(1024px);
     @include align-center;
 
-    @include desktop {
-        @include absolute-middle-center;
-
-        margin-top    : -40px;
-        margin-bottom : 0;
-
-        &.rel {
-            @include relative-top-left;
-            @include translate(0);
-
-            margin-top : 40px;
-        }
-    }
-
     padding       : 20px;
+    padding-top   : 60px;
     margin-bottom : 30px;
 
     h1 {
-        @include font("Roboto" 72px 68px #84bd4f 400);
+        @include font("Roboto" 58px 68px #00b679 400);
 
         margin-bottom : 30px;
     }
@@ -38,7 +25,7 @@
     }
 
     .logo {
-        @include block(164px);
+        @include block(320px none);
 
         margin        : 0 auto;
         margin-bottom : 30px;
@@ -47,11 +34,16 @@
             width : 100%;
         }
     }
+
+    .mascot {
+        @extend .logo;
+
+        width : 256px;
+    }
 }
 
 .footer {
     @include container(1024px);
-    @include absolute-bottom-center;
     @include align-center;
 
     &.rel {
@@ -62,7 +54,12 @@
 
     padding        : 20px;
     padding-bottom : 0;
-    margin-bottom  : 20px;
+
+    @media only screen and (min-height : 700px) {
+        @include absolute-bottom-center;
+
+        margin-bottom : 20px;
+    }
 
     p {
         font-size     : 12px;
@@ -97,7 +94,7 @@
             margin  : 0 5px;
 
             & > ul {
-                margin-left: 10px;
+                margin-left : 10px;
                 font-weight : 400;
 
                 & > li {
