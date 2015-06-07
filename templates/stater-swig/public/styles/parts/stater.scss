@@ -52,13 +52,13 @@
         @include translate(0);
     }
 
-    padding        : 20px;
-    padding-bottom : 0;
+    padding : 20px;
 
     @media only screen and (min-height : 700px) {
         @include absolute-bottom-center;
 
-        margin-bottom : 20px;
+        margin-bottom  : 20px;
+        padding-bottom : 20px;
     }
 
     p {

@@ -34,14 +34,13 @@ else {
 var build = function () {
     require('node-import');
 
-    var gulp = require('gulp'),
-        sass = require('node-sass'),
-        pret = require('gulp-jsbeautifier'),
+    var sass = require('node-sass'),
+        pret = require('js-beautify').html,
         fsex = require('fs-extra'),
         core = require('./app'),
         swig = require('swig');
 
-    console.log('Builing Stater application for production...');
+    core.logs.info('\r\nBuiling Stater application for production...', true);
 
     /* Change the Environment */
     core.env = 'production';
@@ -92,8 +91,23 @@ var build = function () {
             render();
         }
         else {
+            /* Beautifying HTMLs */
+            core.logs.info('\r\nBeautifying HTML files...', true);
+
+            glob.sync('build/**/*.html').forEach(function (path) {
+                core.logs.info('⦿ ' + path, true);
+
+                var html = pret(file.readFileSync(path, 'utf8'), {
+                    indent_size           : 4,
+                    max_preserve_newlines : 1,
+                    unformatted           : [ "sub", "sup", "b", "i", "u" ]
+                });
+
+                if ( html ) file.writeFileSync(path, html);
+            });
+
             /* Compiling Javascripts */
-            core.logs.info('Compiling Javascript and css files...', true);
+            core.logs.info('\r\nCompiling javascript and css files...', true);
 
             var scriptstr = '', stylestr = '';
 
@@ -134,7 +148,7 @@ var build = function () {
                 }
             });
 
-            core.logs.info('Exporting assets...', true);
+            core.logs.info('\r\nExporting assets...', true);
 
             glob.sync('public/!(styles|scripts|robots.txt|sitemap.xml|libs)').forEach(function (file) {
                 fsex.copySync(file, file.replace('public/', 'build/'));
@@ -147,24 +161,13 @@ var build = function () {
             core.logs.info('Writing Robots.txt.', true);
             fsex.writeFileSync('build/robots.txt', core.robots);
 
-            core.logs.info('Compiling rendered HTML files...', true);
-
-            /* Beautifying HTMLs */
-            gulp.src('./build/**/*.html')
-                .pipe(pret({
-                    indent_size         : 4,
-                    maxPreserveNewlines : 1,
-                    unformatted         : [ "sub", "sup", "b", "i", "u" ],
-                }))
-                .pipe(gulp.dest(('./build/')));
-
             sudo('rm -Rf .tmp', function (err, std) {
                 if ( err ) {
                     core.logs.warn(err, true);
-                    core.logs.info('Build process finished without error.', true);
+                    core.logs.warn('\r\nBuild process finished with error.', true);
                 }
                 else {
-                    core.logs.info('Build process finished without error.', true);
+                    core.logs.info('\r\nBuild process finished without error.', true);
                 }
             });
 

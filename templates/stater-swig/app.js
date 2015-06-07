@@ -10,7 +10,7 @@ var express = require('express'),
     config  = require('./core/stater'),
     sudo    = require('child_process').exec,
     file    = require('fs'),
-    gulp    = require('gulp'),
+    Gaze    = require('gaze'),
     find    = require('glob'),
     sass    = require('node-sass'),
     load    = require('gulp-livereload'),
@@ -241,19 +241,17 @@ if ( initStater ) {
     /* Create Livereload server and related tasks on development */
     if ( config.env === 'development' && cliArg.indexOf('--reloads') > -1 ) {
         load.listen({
-            port  : config.reloadport,
-            start : true
+            port   : config.reloadport,
+            auto   : true,
+            silent : true
         });
 
-        /* Views Tasks */
-        /* Triger livereload events and reload router on added views */
-        var views = gulp.watch(root + '/views/**/*.html');
-        views.on('change', function (e) {
-            /* Trigger live reload directly on file change */
-            if ( e.type === 'changed' ) {
+        /* Watching for views file changes */
+        new Gaze('views/**/*.html')
+            .on('changed', function () {
                 load.reload();
-            }
-            else if ( e.type === 'added' || e.type === 'deleted' ) {
+            })
+            .on('added', function () {
                 /* Reload Router */
                 reloadRouters();
 
@@ -262,49 +260,58 @@ if ( initStater ) {
 
                 /* Reload Page */
                 load.reload();
-            }
-        });
+            })
+            .on('deleted', function () {
+                /* Reload Router */
+                reloadRouters();
+
+                /* Reload Models */
+                reloadModel();
+
+                /* Reload Page */
+                load.reload();
+            });
 
         /* Sass Tasks */
-        var styles = gulp.watch(root + '/public/styles/**/*.scss');
-        styles.on('change', function (e) {
-            sass.render({
-                file        : 'public/styles/main.scss',
-                outFile     : 'public/styles/main.css',
-                outputStyle : 'exapnded',
-                sourceMap   : true
-            }, function (err, result) {
-                if ( err ) {
-                    console.log(err);
-                }
-                else {
-                    file.writeFileSync('public/styles/main.css', result.css);
-                    file.writeFileSync('public/styles/main.css.map', result.map);
+        new Gaze('public/styles/**/*.scss')
+            .on('all', function (e) {
+                sass.render({
+                    file        : 'public/styles/main.scss',
+                    outFile     : 'public/styles/main.css',
+                    outputStyle : 'exapnded',
+                    sourceMap   : true
+                }, function (err, result) {
+                    if ( err ) {
+                        console.log(err);
+                    }
+                    else {
+                        file.writeFileSync('public/styles/main.css', result.css);
+                        file.writeFileSync('public/styles/main.css.map', result.map);
 
-                    load.reload();
-                }
+                        load.changed('main.css');
+                    }
+                });
             });
-        });
-
-        /* Model Tasks */
-        var models = gulp.watch(root + '/model/**');
-        models.on('change', function (e) {
-            reloadModel();
-
-            load.reload();
-        });
 
         /* Public Task */
-        var pub = gulp.watch(find.sync('public/!(styles)/**'));
-        pub.on('change', function (e) {
-            load.reload();
-        });
+        new Gaze('public/!(styles|libs|robots.txt|sitemap.xml|*.css|*.map)/**')
+            .on('all', function (e) {
+                load.reload();
+            });
+
+        ///* Model Tasks */
+        new Gaze([ 'model/*.*', 'model/*/**' ])
+            .on('all', function (e) {
+                reloadModel();
+
+                load.reload();
+            });
 
         /* System Task */
-        var system = gulp.watch([ root + '/config/**', root + '/core/**', root + '/plugin/**' ]);
-        system.on('change', function (e) {
-            process.exit();
-        });
+        new Gaze([ 'config/*.*', 'config/*/**', 'core/*.*', 'core/*/**', 'plugin/*.*', 'plugin/*/**' ])
+            .on('all', function (e) {
+                process.exit();
+            });
 
         /* Trigger livereload on self-restart */
         setTimeout(function () {
