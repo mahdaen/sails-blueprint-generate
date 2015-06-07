@@ -59,8 +59,16 @@ main.concat(subs).forEach(function (file) {
 var crouter = require('../config/router');
 routers.concat(crouter);
 
+/* Registering Custom Menus */
+var cmenus = require('../config/menu');
+
+Object.keys(cmenus).forEach(function (name) {
+    menus.set(name, cmenus[ name ]);
+});
+
 /* Exporting Routers */
 module.exports = {
     lists : routers,
     menus : menus
-};
+}
+

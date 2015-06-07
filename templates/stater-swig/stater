@@ -10,6 +10,7 @@
 var sudo = require('child_process').exec,
     info = require('./package.json'),
     file = require('fs'),
+    glob = require('glob'),
     root = __dirname;
 
 /* Getting Arguments */
@@ -18,12 +19,169 @@ var earg = args.slice(3).join(' ');
 var flog = '-l ' + root + '/logs/foreverlog.log -a';
 var debg = false;
 
-if ( args.indexOf('--debug') > -1 ) {
+if ( args.indexOf('--debug') > -1 || args.indexOf('--verbose') ) {
     debg = true;
     flog += ' --verbose';
 }
 else {
     flog = '';
+}
+
+/* Build Project */
+var build = function () {
+    require('node-import');
+
+    var gulp = require('gulp'),
+        sass = require('node-sass'),
+        pret = require('gulp-jsbeautifier'),
+        fsex = require('fs-extra'),
+        core = require('./app'),
+        swig = require('swig');
+
+    console.log('Builing Stater application for production...');
+
+    /* Change the Environment */
+    core.env = 'production';
+
+    /* HTML Renderer */
+    var render = function () {
+        if ( core.router.length > 0 ) {
+            var route = core.router[ 0 ],
+                cpath = route.path, opath = route.path,
+                model = core.model;
+
+            if ( cpath === '/' || cpath === '' ) {
+                cpath = '/home';
+
+                /* Reduce Router */
+                core.router = core.router.slice(1);
+
+                render();
+
+                return;
+            }
+
+            core.logs.info('⦿ ' + cpath, true);
+            core.menus.$current = route;
+
+            cpath = cpath.replace(/^\//, '').replace('/', '.');
+
+            /* Find data related with path */
+            if ( model.get(cpath) && core.meta ) {
+                Object.keys(core.meta).forEach(function (key) {
+                    if ( key in model.get(cpath) ) {
+                        core.meta[ key ] = model.get(cpath)[ key ];
+                    }
+                });
+            }
+
+            /* Render HTML */
+            var html = swig.render(fsex.readFileSync(route.view, 'utf8'), { filename : route.view, locals : core });
+
+            if ( html ) {
+                fsex.ensureFileSync('build/' + route.view.replace(/views\//, ''));
+                fsex.writeFileSync('build/' + route.view.replace(/views\//, ''), html);
+            }
+
+            /* Reduce Router */
+            core.router = core.router.slice(1);
+
+            render();
+        }
+        else {
+            /* Compiling Javascripts */
+            core.logs.info('Compiling Javascript and css files...', true);
+
+            var scriptstr = '', stylestr = '';
+
+            core.assets.scripts.forEach(function (scr, i) {
+                scriptstr += "'@import " + "$root/public/" + scr + "';\r\n";
+            });
+            core.assets.styles.forEach(function (stl, i) {
+                stylestr += "@import " + "'public/" + stl.replace(/\.css$/, '') + "';\r\n";
+            });
+
+            fsex.writeFileSync('.tmp/prod.js', scriptstr);
+            fsex.writeFileSync('.tmp/prod.scss', stylestr);
+
+            fsex.ensureFileSync('build/styles/prod.min.css');
+            fsex.ensureFileSync('build/styles/prod.min.css.map');
+
+            core.logs.info('Minifying javascript and css files...', true);
+
+            imports('.tmp/prod.js', {
+                exec      : false,
+                export    : true,
+                exportDir : 'build/scripts',
+                verbose   : true
+            });
+
+            sass.render({
+                file        : '.tmp/prod.scss',
+                outFile     : 'build/styles/prod.min.css',
+                outputStyle : 'compressed',
+                sourceMap   : true
+            }, function (err, result) {
+                if ( err ) {
+                    console.log(err);
+                }
+                else {
+                    fsex.writeFileSync('build/styles/prod.min.css', result.css);
+                    fsex.writeFileSync('build/styles/prod.min.css.map', result.map);
+                }
+            });
+
+            core.logs.info('Exporting assets...', true);
+
+            glob.sync('public/!(styles|scripts|robots.txt|sitemap.xml|libs)').forEach(function (file) {
+                fsex.copySync(file, file.replace('public/', 'build/'));
+            });
+
+            /* Final Steps */
+            core.logs.info('Writing sitemap.xml.', true);
+            fsex.writeFileSync('build/sitemap.xml', core.sitemapurl);
+
+            core.logs.info('Writing Robots.txt.', true);
+            fsex.writeFileSync('build/robots.txt', core.robots);
+
+            core.logs.info('Compiling rendered HTML files...', true);
+
+            /* Beautifying HTMLs */
+            gulp.src('./build/**/*.html')
+                .pipe(pret({
+                    indent_size         : 4,
+                    maxPreserveNewlines : 1,
+                    unformatted         : [ "sub", "sup", "b", "i", "u" ],
+                }))
+                .pipe(gulp.dest(('./build/')));
+
+            sudo('rm -Rf .tmp', function (err, std) {
+                if ( err ) {
+                    core.logs.warn(err, true);
+                    core.logs.info('Build process finished without error.', true);
+                }
+                else {
+                    core.logs.info('Build process finished without error.', true);
+                }
+            });
+
+            return;
+        }
+    }
+
+    /* Cleanup Destination Dir Before Build */
+    core.logs.info('Cleaning up destination folder before build.', true);
+
+    sudo('rm -Rf build && mkdir build && rm -Rf .tmp && mkdir .tmp', function (err, std) {
+        if ( err ) {
+            core.logs.warn(err, true);
+        }
+        else {
+            /* Rendering HTMLs based on Router */
+            core.logs.info('Rendering HMTL files based on routers.', true);
+            render();
+        }
+    });
 }
 
 /* Save Configs */
@@ -83,10 +241,14 @@ if ( args.length >= 3 ) {
             sudo('forever ' + flog + ' stop app.js', function () {
                 sudo('forever ' + flog + ' start app.js start ' + earg, function (err, std) {
                     if ( err ) {
-                        console.log(err);
+                        if ( debg ) {
+                            console.log(err);
+                        }
                     }
                     else {
-                        console.log(std);
+                        if ( debg ) {
+                            console.log(std);
+                        }
                     }
                 });
             });
@@ -104,10 +266,30 @@ if ( args.length >= 3 ) {
                     }
                 }
                 else {
+                    if ( debg ) {
+                        console.log(std);
+                    }
+                }
+            });
+
+            break;
+        case 'restart':
+            console.log('Restarting Stater...');
+
+            sudo('forever stop app.js', function (err, std) {
+                if ( err ) {
+                    if ( debg ) {
+                        console.log(err);
+                    }
+                }
+
+                if ( debg ) {
                     console.log(std);
                 }
 
-                sudo('forever ' + flog + ' stop Gruntfile.js', function (err, std) {
+                var cmd = 'forever ' + flog + ' start app.js start ' + earg;
+
+                sudo(cmd, function (err, std) {
                     if ( err ) {
                         console.log(err);
                     }
@@ -118,24 +300,11 @@ if ( args.length >= 3 ) {
             });
 
             break;
-        case 'restart':
-            console.log('Restarting Stater...');
-
-            sudo('forever ' + flog + ' restart app.js ' + earg, function (err, std) {
-                if ( err ) {
-                    console.log(err);
-                }
-                else {
-                    console.log(std);
-                }
-            });
-
-            break;
         case 'develop':
             console.log('Starting Stater in development mode...');
 
             sudo('forever ' + flog + ' stop app.js', function () {
-                sudo('forever ' + flog + ' start app.js start ' + earg + ' && forever ' + flog + ' start Gruntfile.js develop', function (err, std) {
+                sudo('forever ' + flog + ' start app.js start --reloads ' + earg, function (err, std) {
                     if ( err ) {
                         console.log(err);
                     }
@@ -147,16 +316,7 @@ if ( args.length >= 3 ) {
 
             break;
         case 'build':
-            console.log('Building Stater to static site...');
-
-            sudo('grunt build ' + earg, function (err, std) {
-                if ( err ) {
-                    console.log(err);
-                }
-                else {
-                    console.log(std);
-                }
-            });
+            build();
 
             break;
         case 'info':

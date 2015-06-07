@@ -8,20 +8,22 @@
 var express = require('express'),
     compres = require('compression'),
     config  = require('./core/stater'),
-    exec    = require('child_process'),
+    sudo    = require('child_process').exec,
+    file    = require('fs'),
+    gulp    = require('gulp'),
+    find    = require('glob'),
+    sass    = require('node-sass'),
+    load    = require('gulp-livereload'),
+    root    = __dirname,
     swig    = require('swig');
 
-/* Creating Application Data */
-var appData = {};
+/* Creating Swig Renderer */
+var render = swig.renderFile;
 
 /* Getting Runtime Arguments */
 var cliArg = process.argv;
+var clflag = cliArg.slice(3).join(' ');
 var debugs = config.debug;
-
-/* Binding configurations to appData */
-Object.keys(config).forEach(function (title) {
-    appData[ title ] = config[ title ];
-});
 
 /* Configuring Swig */
 swig.setDefaults({ cache : false });
@@ -34,9 +36,6 @@ if ( config.env === 'production' && config.cached ) {
 Object.keys(config.filter).forEach(function (filter) {
     swig.setFilter(filter, config.filter[ filter ]);
 });
-
-/* Swig Renderer */
-var render = swig.renderFile;
 
 /* Start Server only if "start" argument is defined */
 var initStater = false;
@@ -56,12 +55,51 @@ if ( cliArg && cliArg.length >= 3 ) {
     }
 }
 
+/* Router Reloader */
+var reloadRouters = function () {
+    delete require.cache[ require.resolve('./core/router') ];
+    var rtr = require('./core/router');
+
+    config.router = rtr.lists;
+    config.menus = rtr.menus;
+}
+
+/* Model Reloader */
+var reloadModel = function () {
+    /* Collecting Models */
+    var models = find.sync('model/**/*.js');
+
+    /* Binding Models to Configuration Data */
+    models.forEach(function (name) {
+        /* Getting Model Name */
+        var modelName = name.replace('model/', '').replace(/\//g, '.').replace(/\.js$/, '');
+
+        /* Getting Model Data */
+        try {
+            delete require.cache[ require.resolve('./' + name) ];
+
+            var data = require('./' + name);
+
+            if ( data ) {
+                config.model.set(modelName, data);
+
+                if ( data.$name && config.menus.get(modelName) ) {
+                    config.menus.set(modelName + '.$name', data.$name);
+                }
+            }
+        }
+        catch ( err ) {
+            config.logs.warn(err);
+        }
+    });
+}
+
 if ( initStater ) {
     /* Creating New Host */
     var app = express();
 
     /* Enable Express Compression */
-    if ( appData.env === 'production' ) {
+    if ( config.env === 'production' ) {
         app.use(compres({
             filter : function (req, res) {
                 if ( req.headers[ 'x-no-compression' ] ) {
@@ -76,7 +114,7 @@ if ( initStater ) {
     }
 
     /* Serve server from "build" folder on production, and use router on development */
-    if ( appData.env === 'production' && config.cached ) {
+    if ( config.env === 'production' && config.cached ) {
         /* Serving Static Files */
         app.use(express.static('build', { etag : true, maxAge : 604800000 }));
     }
@@ -92,8 +130,10 @@ if ( initStater ) {
         config.logs.info('Initializing request ' + config.htpr + '://' + hostname + ':' + config.port + req.path);
 
         /* Redirect to original host if requested with different host */
-        if ( config.env && cliArg.indexOf('--noredir') < 0 ) {
+        if ( cliArg.indexOf('--noredir') < 0 ) {
             if ( hostname !== config.host ) {
+                config.logs.info('Redirecting request to original host from ' + config.htpr + '://' + hostname + ':' + config.port + req.path);
+
                 res.redirect(config.htpr + '://' + config.host);
             }
             else {
@@ -112,28 +152,28 @@ if ( initStater ) {
             config.logs.req(req);
 
             /* Getting Model */
-            var cmodel = appData.model.get(router.name);
+            var cmodel = config.model.get(router.name);
 
             /* Find data related with path */
-            if ( cmodel && appData.meta ) {
-                Object.keys(appData.meta).forEach(function (key) {
+            if ( cmodel && config.meta ) {
+                Object.keys(config.meta).forEach(function (key) {
                     if ( key in cmodel ) {
-                        appData.meta[ key ] = cmodel[ key ];
+                        config.meta[ key ] = cmodel[ key ];
                     }
                 });
             }
 
-            appData.menus.$current = router;
+            config.menus.$current = router;
 
-            /* Rendering Views with appData as appData */
-            render('./' + router.view, appData, function (err, html) {
+            /* Rendering Views with config as config */
+            render('./' + router.view, config, function (err, html) {
                 if ( err ) {
                     config.logs.warn(err);
                     config.logs.info('Sending ' + (err.status || 500) + ' from request: ' + req.protocol + '://' + req.hostname + ':' + config.port + req.originalUrl);
 
-                    if ( debugs ) appData.error = err;
+                    if ( debugs ) config.error = err;
 
-                    render('./views/500.html', appData, function (err, html) {
+                    render('./views/500.html', config, function (err, html) {
                         res.status(500);
                         res.send(html);
                     });
@@ -171,15 +211,15 @@ if ( initStater ) {
 
         res.status(err.status || 500);
 
-        if ( debugs ) appData.error = err;
+        if ( debugs ) config.error = err;
 
-        render('./views/' + (err.status || 500) + '.html', appData, function (err, html) {
+        render('./views/' + (err.status || 500) + '.html', config, function (err, html) {
             if ( err ) {
                 config.logs.warn(err);
 
-                if ( debugs ) appData.error = err;
+                if ( debugs ) config.error = err;
 
-                render('./views/500.html', appData, function (err, html) {
+                render('./views/500.html', config, function (err, html) {
                     res.status(500);
                     res.send(html);
                 });
@@ -194,10 +234,85 @@ if ( initStater ) {
     });
 
     /* Starting Server */
-    var host = app.listen(appData.port, function () {
-        config.logs.info('Server listening at: ' + appData.htpr + '://' + appData.host + ':' + appData.port + ' on ' + appData.env + ' environtment.');
+    var host = app.listen(config.port, function () {
+        config.logs.info('Server listening at: ' + config.htpr + '://' + config.host + ':' + config.port + ' on ' + config.env + ' environtment.');
     });
+
+    /* Create Livereload server and related tasks on development */
+    if ( config.env === 'development' && cliArg.indexOf('--reloads') > -1 ) {
+        load.listen({
+            port  : config.reloadport,
+            start : true
+        });
+
+        /* Views Tasks */
+        /* Triger livereload events and reload router on added views */
+        var views = gulp.watch(root + '/views/**/*.html');
+        views.on('change', function (e) {
+            /* Trigger live reload directly on file change */
+            if ( e.type === 'changed' ) {
+                load.reload();
+            }
+            else if ( e.type === 'added' || e.type === 'deleted' ) {
+                /* Reload Router */
+                reloadRouters();
+
+                /* Reload Models */
+                reloadModel();
+
+                /* Reload Page */
+                load.reload();
+            }
+        });
+
+        /* Sass Tasks */
+        var styles = gulp.watch(root + '/public/styles/**/*.scss');
+        styles.on('change', function (e) {
+            sass.render({
+                file        : 'public/styles/main.scss',
+                outFile     : 'public/styles/main.css',
+                outputStyle : 'exapnded',
+                sourceMap   : true
+            }, function (err, result) {
+                if ( err ) {
+                    console.log(err);
+                }
+                else {
+                    file.writeFileSync('public/styles/main.css', result.css);
+                    file.writeFileSync('public/styles/main.css.map', result.map);
+
+                    load.reload();
+                }
+            });
+        });
+
+        /* Model Tasks */
+        var models = gulp.watch(root + '/model/**');
+        models.on('change', function (e) {
+            reloadModel();
+
+            load.reload();
+        });
+
+        /* Public Task */
+        var pub = gulp.watch(find.sync('public/!(styles)/**'));
+        pub.on('change', function (e) {
+            load.reload();
+        });
+
+        /* System Task */
+        var system = gulp.watch([ root + '/config/**', root + '/core/**', root + '/plugin/**' ]);
+        system.on('change', function (e) {
+            process.exit();
+        });
+
+        /* Trigger livereload on self-restart */
+        setTimeout(function () {
+            config.logs.info('Triggering reload on start...');
+            load.reload();
+        }, 200);
+    }
 }
 
 /* Exporting Application Data */
-module.exports = appData;
+module.exports = config;

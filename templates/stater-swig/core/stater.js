@@ -21,9 +21,11 @@ var silence = process.argv.indexOf('--silent') > -1 ? true : false;
 var logger = require('./logger');
 
 /* Creating Configuration Data */
+var routers = require('./router');
+
 var configs = {
-    router     : require('./router').lists,
-    menus      : require('./router').menus,
+    router     : routers.lists,
+    menus      : routers.menus,
     model      : new tree(),
     plugin     : {},
 
@@ -235,13 +237,6 @@ robotx += 'Sitemap: ' + configs.htpr + '://' + configs.host + '/sitemap.xml';
 configs.robots = robotx;
 
 file.writeFileSync('./public/robots.txt', robotx);
-
-/* Registering Custom Menus */
-var cmenus = require('../config/menu');
-
-Object.keys(cmenus).forEach(function (name) {
-    configs.menus[ name ] = cmenus[ name ];
-});
 
 /* Loading Plugins */
 var plugins = find.sync('plugin/*.js');
