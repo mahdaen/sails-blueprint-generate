@@ -19,6 +19,9 @@ var earg = args.slice(3).join(' ');
 var flog = '-l ' + root + '/logs/foreverlog.log -a';
 var debg = false;
 
+/* Ensure Logs file is exist */
+sudo('mkdir logs');
+
 if ( args.indexOf('--debug') > -1 || args.indexOf('--verbose') ) {
     debg = true;
     flog += ' --verbose';
@@ -301,6 +304,24 @@ if ( args.length >= 3 ) {
 
             break;
         case 'develop':
+            /* Compiling SASS before starti app */
+            var sass = require('node-sass');
+            sass.render({
+                file        : 'public/styles/main.scss',
+                outFile     : 'public/styles/main.css',
+                outputStyle : 'exapnded',
+                sourceMap   : true
+            }, function (err, result) {
+                if ( err ) {
+                    console.log(err);
+                }
+                else {
+                    file.writeFileSync('public/styles/main.css', result.css);
+                    file.writeFileSync('public/styles/main.css.map', result.map);
+                }
+            });
+
+            /* Starting App in Development Mode */
             console.log('Starting Stater in development mode...');
 
             sudo('forever ' + flog + ' stop app.js', function () {
