@@ -16,7 +16,7 @@ var sudo = require('child_process').exec,
 /* Getting Arguments */
 var args = process.argv;
 var earg = args.slice(3).join(' ');
-var flog = '-l ' + root + '/logs/foreverlog.log -a';
+var flog = '-l ' + root + '/logs/foreverlog.log -a --minUptime 200';
 var debg = false;
 
 /* Ensure Logs file is exist */
@@ -24,7 +24,7 @@ sudo('mkdir logs');
 
 if ( args.indexOf('--debug') > -1 || args.indexOf('--verbose') ) {
     debg = true;
-    flog += ' --verbose';
+    flog += ' --verbose ';
 }
 else {
     flog = '';
@@ -65,6 +65,7 @@ var build = function () {
 
             core.logs.info('⦿ ' + cpath, true);
             core.menus.$current = route;
+            core.base = route.base;
 
             cpath = cpath.replace(/^\//, '').replace('/', '.');
 
@@ -100,7 +101,7 @@ var build = function () {
                 var html = pret(file.readFileSync(path, 'utf8'), {
                     indent_size           : 4,
                     max_preserve_newlines : 1,
-                    unformatted           : [ "sub", "sup", "b", "i", "u" ]
+                    unformatted           : [ "sub", "sup", "b", "i", "u", 'code', 'strong', 'em', '{' + '}' ]
                 });
 
                 if ( html ) file.writeFileSync(path, html);
@@ -328,7 +329,7 @@ if ( args.length >= 3 ) {
             console.log('Starting Stater in development mode...');
 
             sudo('forever ' + flog + ' stop app.js', function () {
-                sudo('forever ' + flog + ' start app.js start --reloads ' + earg, function (err, std) {
+                sudo('forever ' + flog + ' start app.js start --reloads --verbose ' + earg, function (err, std) {
                     if ( err ) {
                         console.log(err);
                     }

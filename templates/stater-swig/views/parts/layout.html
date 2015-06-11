@@ -1,6 +1,3 @@
-{# Root Path #}
-{% set ROOT = '/' %}
-
 <!doctype html>
 <html lang="en">
     <head>
@@ -40,28 +37,28 @@
 
         <!-- START APP ICONS -->
         {% block appicon -%}
-            <link rel="apple-touch-icon-precomposed" sizes="57x57" href="{{ ROOT }}icons/apple-touch-icon-57x57.png" />
-            <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ ROOT }}icons/apple-touch-icon-114x114.png" />
-            <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ ROOT }}icons/apple-touch-icon-72x72.png" />
-            <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ ROOT }}icons/apple-touch-icon-144x144.png" />
-            <link rel="apple-touch-icon-precomposed" sizes="60x60" href="{{ ROOT }}icons/apple-touch-icon-60x60.png" />
-            <link rel="apple-touch-icon-precomposed" sizes="120x120" href="{{ ROOT }}icons/apple-touch-icon-120x120.png" />
-            <link rel="apple-touch-icon-precomposed" sizes="76x76" href="{{ ROOT }}icons/apple-touch-icon-76x76.png" />
-            <link rel="apple-touch-icon-precomposed" sizes="152x152" href="{{ ROOT }}icons/apple-touch-icon-152x152.png" />
+            <link rel="apple-touch-icon-precomposed" sizes="57x57" href="{{ base }}icons/apple-touch-icon-57x57.png" />
+            <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ base }}icons/apple-touch-icon-114x114.png" />
+            <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ base }}icons/apple-touch-icon-72x72.png" />
+            <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ base }}icons/apple-touch-icon-144x144.png" />
+            <link rel="apple-touch-icon-precomposed" sizes="60x60" href="{{ base }}icons/apple-touch-icon-60x60.png" />
+            <link rel="apple-touch-icon-precomposed" sizes="120x120" href="{{ base }}icons/apple-touch-icon-120x120.png" />
+            <link rel="apple-touch-icon-precomposed" sizes="76x76" href="{{ base }}icons/apple-touch-icon-76x76.png" />
+            <link rel="apple-touch-icon-precomposed" sizes="152x152" href="{{ base }}icons/apple-touch-icon-152x152.png" />
 
-            <link rel="icon" type="image/png" href="{{ ROOT }}icons/favicon-196x196.png" sizes="196x196" />
-            <link rel="icon" type="image/png" href="{{ ROOT }}icons/favicon-96x96.png" sizes="96x96" />
-            <link rel="icon" type="image/png" href="{{ ROOT }}icons/favicon-32x32.png" sizes="32x32" />
-            <link rel="icon" type="image/png" href="{{ ROOT }}icons/favicon-16x16.png" sizes="16x16" />
-            <link rel="icon" type="image/png" href="{{ ROOT }}icons/favicon-128.png" sizes="128x128" />
+            <link rel="icon" type="image/png" href="{{ base }}icons/favicon-196x196.png" sizes="196x196" />
+            <link rel="icon" type="image/png" href="{{ base }}icons/favicon-96x96.png" sizes="96x96" />
+            <link rel="icon" type="image/png" href="{{ base }}icons/favicon-32x32.png" sizes="32x32" />
+            <link rel="icon" type="image/png" href="{{ base }}icons/favicon-16x16.png" sizes="16x16" />
+            <link rel="icon" type="image/png" href="{{ base }}icons/favicon-128.png" sizes="128x128" />
 
             <meta name="application-name" content="&nbsp;"/>
             <meta name="msapplication-TileColor" content="#FFFFFF" />
-            <meta name="msapplication-TileImage" content="{{ ROOT }}icons/mstile-144x144.png" />
-            <meta name="msapplication-square70x70logo" content="{{ ROOT }}icons/mstile-70x70.png" />
-            <meta name="msapplication-square150x150logo" content="{{ ROOT }}icons/mstile-150x150.png" />
-            <meta name="msapplication-wide310x150logo" content="{{ ROOT }}icons/mstile-310x150.png" />
-            <meta name="msapplication-square310x310logo" content="{{ ROOT }}icons/mstile-310x310.png" />
+            <meta name="msapplication-TileImage" content="{{ base }}icons/mstile-144x144.png" />
+            <meta name="msapplication-square70x70logo" content="{{ base }}icons/mstile-70x70.png" />
+            <meta name="msapplication-square150x150logo" content="{{ base }}icons/mstile-150x150.png" />
+            <meta name="msapplication-wide310x150logo" content="{{ base }}icons/mstile-310x150.png" />
+            <meta name="msapplication-square310x310logo" content="{{ base }}icons/mstile-310x310.png" />
         {%- endblock %}
         <!-- END APP ICONS -->
 
@@ -69,10 +66,10 @@
         {% block stylesheets -%}
             {% if env === 'development' -%}
                 {% for style in assets.styles -%}
-                    <link rel="stylesheet" href="{{ ROOT }}{{ style }}"/>
+                    <link rel="stylesheet" href="{{ base }}{{ style }}"/>
                 {%- endfor %}
             {% else -%}
-                <link rel="stylesheet" href="{{ ROOT }}styles/prod.min.css"/>
+                <link rel="stylesheet" href="{{ base }}styles/prod.min.css"/>
             {%- endif %}
 
             {# Remove it when unused #}
@@ -97,10 +94,10 @@
         {% block javascripts -%}
             {% if env === 'development' -%}
                 {% for script in assets.scripts -%}
-                    <script type="text/javascript" src="{{ ROOT }}{{ script }}"></script>
+                    <script type="text/javascript" src="{{ base }}{{ script }}"></script>
                 {%- endfor %}
             {% else -%}
-                <script type="text/javascript" src="{{ ROOT }}scripts/prod.min.js"></script>
+                <script type="text/javascript" src="{{ base }}scripts/prod.min.js"></script>
             {%- endif %}
         {%- endblock %}
         <!-- END JAVASCRIPTS -->
@@ -126,7 +123,7 @@
                 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
                     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
                         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-                })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+                })(window,document,'script','http://www.google-analytics.com/analytics.js','ga');
 
                 ga('create', 'UA-63624202-1', 'auto');
                 ga('send', 'pageview');

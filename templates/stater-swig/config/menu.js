@@ -14,6 +14,7 @@ module.exports = {
         $name : 'Help',
         $path : 'help',
         $view : '',
-        $link : 'http://github.com/mahdaen/stater#readme'
+        $link : 'http://github.com/mahdaen/stater#readme',
+        $base : ''
     }
 }

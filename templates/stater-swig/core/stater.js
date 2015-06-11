@@ -24,6 +24,7 @@ var logger = require('./logger');
 var routers = require('./router');
 
 var configs = {
+    base       : '/',
     router     : routers.lists,
     menus      : routers.menus,
     model      : new tree(),
@@ -57,7 +58,7 @@ var configs = {
 /* Menu Extractor */
 configs.parseMenu = function (menus) {
     /* Sorting Menu */
-    var numb = [], char = [ 'home' ];
+    var numb = [], char = [ 'home' ], ext = (configs.env === 'production' ? '.html' : '');
 
     Object.keys(menus).forEach(function (key) {
         if ( Number(key) ) {
@@ -73,12 +74,12 @@ configs.parseMenu = function (menus) {
     char = char.concat(numb.sort());
 
     /* Creating Menu */
-    var menu = '<ul>', skip = [ '$current', '$link', '$view', '$path', '$name' ];
+    var menu = '<ul>', skip = [ '$current', '$link', '$view', '$path', '$name', '$base' ];
 
     var parse = function (mni) {
         var cr = menus.$current.view === mni.$view ? ' class="current"' : '';
 
-        var ms = '<li>' + '<a href="' + mni.$link + '"' + cr + '>' + '<span>' + mni.$name + '</span>' + '</a>';
+        var ms = '<li>' + '<a href="' + configs.base + mni.$link.replace(/^\//, '') + ext + '"' + cr + '>' + '<span>' + mni.$name + '</span>' + '</a>';
 
         if ( Object.keys(mni).length > 5 ) {
             ms += '<ul>';

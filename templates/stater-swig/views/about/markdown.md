@@ -1,4 +1,4 @@
-![Stater](/icons/apple-touch-icon-152x152.png)
+![Stater](http://stater.mahdaen.name/icons/apple-touch-icon-152x152.png)
 
 <br>
 <br>

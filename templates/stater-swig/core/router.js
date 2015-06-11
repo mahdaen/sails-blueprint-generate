@@ -35,11 +35,18 @@ main.concat(subs).forEach(function (file) {
 
     var name = route.replace(/^\//, '').replace('/', '.');
 
+    var base = '';
+
+    name.split('.').slice(1).forEach(function () {
+        base += '../'
+    });
+
     /* Adding router to router list */
     routers.push({
         path : route,
         view : file,
-        name : name
+        name : name,
+        base : base
     });
 
     /* Adding Menu */
@@ -47,7 +54,8 @@ main.concat(subs).forEach(function (file) {
         $link : route,
         $view : file,
         $path : name,
-        $name : name.split('.').pop()
+        $name : name.split('.').pop(),
+        $base : base
     });
 });
 
